@@ -1,0 +1,11 @@
+/.idea/.gitignore
+__pycache__
+/.idea
+/build
+/config/passwd.txt
+/config/config.ini
+/dist
+/logs
+/BrutalityExtractorCli.spec
+/venv
+/BrutalityExtractor.spec
