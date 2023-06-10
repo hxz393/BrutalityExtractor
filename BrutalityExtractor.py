@@ -698,38 +698,37 @@ class BrutalityExtractor:
         logger.info(LANG["extra_info_start"].format("#" * 6, "#" * 6))
 
         if not path_dest:
-            logger.warning(LANG["path_dest_warning"].format("#" * 6, "#" * 6))
+            logger.warning(LANG["extra_path_dest_warning"].format("#" * 6, "#" * 6))
             self.root.after(10, lambda: Messagebox.show_warning(
                 title=LANG['msg_info_title'],
-                message=LANG["path_dest_warning_msg"]))
+                message=LANG["extra_path_dest_warning_msg"]))
+            return
+
+        paths = get_folder_paths(path_dest, logger)
+        files = get_file_paths(path_dest, logger)
+
+        if not paths and not files:
+            self.text_logs.insert(END, LANG["extra_no_action"].format(path_dest), "green")
             return
 
         if xcld != {''}:
-            paths = get_folder_paths(path_dest, logger)
             remove_matched(paths, logger, xcld)
-            paths_now = get_folder_paths(path_dest, logger)
-            del_count = len(paths) - len(paths_now)
+            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_xcld_info"].format(path_dest, del_count), "green")
 
         if xclf != {''}:
-            files = get_file_paths(path_dest, logger)
             remove_matched(files, logger, xclf)
-            files_now = get_file_paths(path_dest, logger)
-            del_count = len(files) - len(files_now)
+            del_count = len(files) - len(get_file_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_xclf_info"].format(path_dest, del_count), "green")
 
         if is_redundant:
-            paths = get_folder_paths(path_dest, logger)
             [remove_redundant(i, logger) for i in get_subdirectories(path_dest, logger)]
-            paths_now = get_folder_paths(path_dest, logger)
-            del_count = len(paths) - len(paths_now)
+            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_is_redundant_info"].format(path_dest, del_count), "green")
 
         if is_empty:
-            paths = get_folder_paths(path_dest, logger)
             remove_empty_dirs(path_dest, logger)
-            paths_now = get_folder_paths(path_dest, logger)
-            del_count = len(paths) - len(paths_now)
+            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_is_empty_info"].format(path_dest, del_count), "green")
 
         logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))

@@ -81,11 +81,15 @@ def get_subdirectories(path: str, logger) -> list[str]:
     :return: 文件夹路径列表
     """
     subdirectories = []
+    path = Path(path)
     try:
-        for item in Path(path).iterdir():
-            if item.is_dir():
-                subdirectories.append(str(item))
-        logger.debug(f'获取目录 {path} 下的子目录列表完成，文件列表如下：\n{subdirectories}')
+        if not path.exists() or not path.is_dir():
+            logger.warning(f'源目录 {path} 不存在或不是有效的目录路径')
+        else:
+            for item in Path(path).iterdir():
+                if item.is_dir():
+                    subdirectories.append(str(item))
+            logger.debug(f'获取目录 {path} 下的子目录列表完成，文件列表如下：\n{subdirectories}')
     except Exception as e:
         logger.error(f'获取目录 {path} 下的子目录列表失败: \n{str(e)}')
 

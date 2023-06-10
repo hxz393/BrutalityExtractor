@@ -14,13 +14,13 @@ logger=configure_logging(log_file=False, console_output=True)
 
 def main(path_zip: str, password: str, parallel: str):
     """
-    命令行模式
-    打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin\7z.exe;bin' --add-binary 'bin\7z.dll;bin' --console BrutalityExtractorCli.py
+    Command-line mode
+    Package：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin\7z.exe;bin' --add-binary 'bin\7z.dll;bin' --console BrutalityExtractorCli.py
 
-    :param path_zip: 有压缩文件的目录
-    :param password: 压缩文件密码
-    :param parallel: 进程数
-    :return: 返回状态码
+    :param path_zip: Directory containing the compressed files
+    :param password: Password for the compressed file
+    :param parallel: Number of processes
+    :return: Return status code
     """
     path_zip = str(path_zip)
     password = str(password) if password else ''
@@ -34,19 +34,15 @@ def main(path_zip: str, password: str, parallel: str):
     logger.info(LANG["main_info_start"].format("#" * 6, "#" * 6))
     start_time = time.time()
 
-    # 获取目标目录下的所有文件路径列表
     file_paths = get_file_paths(path_zip, logger)
     if not file_paths:
         logger.warning(LANG["main_no_file_warning"].format("#" * 6, path_zip, "#" * 6))
         return 1
 
-    # 对文件路径列表按解压目标进行初步分组
     path_groups = group_file_paths(file_paths, logger)
 
-    # 生成全文件分组列表
     full_infos = group_list_by_lens(path_groups, logger)
 
-    # 筛选出压缩文件分组列表
     file_infos = group_files_main(full_infos, logger)
     if not file_infos:
         logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
@@ -79,6 +75,7 @@ def main(path_zip: str, password: str, parallel: str):
     finished_counts = file_in_total_number - failed_counts
 
     logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed))
+    return 0
 
 
 if __name__ == '__main__':

@@ -31,8 +31,9 @@ def configure_logging(log_file: bool = True, console_output: bool = False, log_l
         logger.addHandler(ch)
 
     if log_file:
-        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        log_file = f"logs/log_{current_date}.log"
+        # current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        # log_file = f"logs/log_{current_date}.log"
+        log_file = f"logs/Player.log"
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
         fh = RotatingFileHandler(log_file, maxBytes=max_log_size * 1024 * 1024, backupCount=backup_count)
