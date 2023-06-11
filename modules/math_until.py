@@ -1,3 +1,5 @@
+from modules.conf_init import LANG
+
 def format_size(size, is_disk=False, precision=2) -> str:
     """
     转换文件大小单位
@@ -11,14 +13,14 @@ def format_size(size, is_disk=False, precision=2) -> str:
     unit = 1000.0 if is_disk else 1024.0
 
     if not isinstance(size, (float, int)):
-        raise TypeError('参数不是数字!')
+        raise TypeError(LANG["format_size_typeerror"])
     if size < 0:
-        raise ValueError('参数必须大于零')
+        raise ValueError(LANG["format_size_valueerror"])
 
     for fmt in format_list:
         size, remainder = divmod(size, unit)
         if size < unit:
-            return f'{round(size, precision)}{fmt}'
+            return f'{round(size, precision)} {fmt}'
 
 
 def format_time(duration: float, decimal_places: int = 2) -> str:
@@ -29,21 +31,21 @@ def format_time(duration: float, decimal_places: int = 2) -> str:
     :param decimal_places: 小数点精度
     :return: 格式化后的时间字符串
     """
-    FORMAT_LIST = ['秒', '分钟', '小时']
+    FORMAT_LIST = [LANG["second"], LANG["minute"], LANG["hour"]]
     UNIT = 60.0
 
     if not (isinstance(duration, (float, int))):
-        raise TypeError('参数不是数字!')
+        raise TypeError(LANG["format_size_typeerror"])
     if duration < 0:
-        raise ValueError('参数必须大于零')
+        raise ValueError("format_size_valueerror")
 
     for fmt in FORMAT_LIST:
         if duration < UNIT:
-            return f'{round(duration, decimal_places)}{fmt}'
+            return f'{round(duration, decimal_places)} {fmt}'
         else:
             duration /= UNIT
 
-    return f'{round(duration, decimal_places)}{FORMAT_LIST[-1]}'
+    return f'{round(duration, decimal_places)} {FORMAT_LIST[-1]}'
 
 
 def calculate_speed(size_bytes: int, elapsed_time_seconds: float) -> str:
@@ -56,15 +58,13 @@ def calculate_speed(size_bytes: int, elapsed_time_seconds: float) -> str:
     """
     bytes_per_second = size_bytes / elapsed_time_seconds
 
-    # 处理单位
     units = ["Bytes", "KB", "MB", "GB"]
     index = 0
     while bytes_per_second >= 1024 and index < len(units) - 1:
         bytes_per_second /= 1024
         index += 1
 
-    # 格式化输出
-    speed_formatted = f"{bytes_per_second:.2f}{units[index]}/秒"
+    speed_formatted = f"{bytes_per_second:.2f} {units[index]}/{LANG['s']}"
 
     return speed_formatted
 

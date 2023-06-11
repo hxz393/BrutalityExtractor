@@ -1,26 +1,17 @@
 from pathlib import Path
 import json
-from logging import getLogger
-import configparser
 import base64
 import uuid
 import tempfile
 import magic
+from logging import getLogger
 from collections import defaultdict
 import shutil
 import re
 import os
 from typing import Dict, List, Any
 
-ZIP_FILE_TYPE_DICT = {
-    'application/x-bzip2': '.bz2',
-    'application/x-gzip': '.gz',
-    'application/x-rar': '.rar',
-    'application/x-tar': '.tar',
-    'application/x-xz': '.xz',
-    'application/zip': '.zip',
-    'application/x-7z-compressed': '.7z'
-}
+from modules.conf_init import LANG, ZIP_FILE_TYPE_DICT
 
 
 def get_file_paths(target: str, logger) -> list[str]:
@@ -36,12 +27,12 @@ def get_file_paths(target: str, logger) -> list[str]:
 
     try:
         if not path.exists() or not path.is_dir():
-            logger.warning(f'源目录 {target} 不存在或不是有效的目录路径')
+            logger.warning(LANG["no_paths_warning"].format(target))
         else:
             file_paths = [str(file_path) for file_path in path.rglob('*') if file_path.is_file()]
-            logger.debug(f'获取目录 {target} 下的文件列表完成，文件列表如下：\n{file_paths}')
+            logger.debug(LANG["get_file_paths_debug"].format(target, file_paths))
     except Exception as e:
-        logger.error(f'获取目录 {target} 下的文件列表失败: \n{str(e)}')
+        logger.error(LANG["get_file_paths_error"].format(target, e))
 
     return file_paths
 
@@ -59,15 +50,15 @@ def get_folder_paths(target: str, logger) -> list[str]:
 
     try:
         if not path.exists() or not path.is_dir():
-            logger.warning(f'源目录 {target} 不存在或不是有效的目录路径')
+            logger.warning(LANG["no_paths_warning"].format(target))
         else:
             for entry in path.iterdir():
                 if entry.is_dir():
                     folder_paths.append(str(entry))
                     folder_paths.extend(get_folder_paths(str(entry),logger))
-            logger.debug(f'获取目录 {target} 下的文件夹列表完成，文件列表如下：\n{folder_paths}')
+            logger.debug(LANG["get_folder_paths_debug"].format(target, folder_paths))
     except Exception as e:
-        logger.error(f'获取目录 {target} 下的文件夹列表失败: \n{str(e)}')
+        logger.error(LANG["get_folder_paths_error"].format(target, e))
 
     return folder_paths
 
@@ -82,22 +73,23 @@ def get_subdirectories(path: str, logger) -> list[str]:
     """
     subdirectories = []
     path = Path(path)
+
     try:
         if not path.exists() or not path.is_dir():
-            logger.warning(f'源目录 {path} 不存在或不是有效的目录路径')
+            logger.warning(LANG["no_paths_warning"].format(path))
         else:
             for item in Path(path).iterdir():
                 if item.is_dir():
                     subdirectories.append(str(item))
-            logger.debug(f'获取目录 {path} 下的子目录列表完成，文件列表如下：\n{subdirectories}')
+            logger.debug(LANG["get_subdirectories_debug"].format(path, subdirectories))
     except Exception as e:
-        logger.error(f'获取目录 {path} 下的子目录列表失败: \n{str(e)}')
+        logger.error(LANG["get_subdirectories_error"].format(path, e))
 
     return subdirectories
 
 def get_file_type(file_path: str, logger) -> str:
     """
-    以读取文件头的方式，取得指定文件的真实类型
+    以读取文件头部内容的方式，取得指定文件的真实类型
 
     :param file_path: 要检测的文件路径
     :param logger: 日志记录器
@@ -107,10 +99,10 @@ def get_file_type(file_path: str, logger) -> str:
 
     try:
         with open(file_path, 'rb') as f:
-            file_type = magic.from_buffer(f.read(4096), mime=True)
-            logger.debug(f'文件 {file_path} 类型为：{file_type}')
+            file_type = magic.from_buffer(f.read(1024), mime=True)
+            logger.debug(LANG["get_file_type_debug"].format(file_path, file_type))
     except (FileNotFoundError, PermissionError) as e:
-        logger.error(f'无法获取 {file_path} 文件类型：\n{str(e)}')
+        logger.error(LANG["get_file_type_error"].format(file_path, e))
 
     return file_type
 
@@ -131,9 +123,9 @@ def get_target_size(target: str, logger) -> int:
             total_size = path.stat().st_size
         elif path.is_dir():
             total_size = sum(file.stat().st_size for file in path.rglob('*') if file.is_file())
-        logger.debug(f'目标 {target} 大小为：{total_size}')
+        logger.debug(LANG["get_target_size_debug"].format(target, total_size))
     except Exception as e:
-        logger.error(f'无法获取 {target} 大小：\n{str(e)}')
+        logger.error(LANG["get_target_size_error"].format(target, e))
 
     return total_size
 
@@ -151,11 +143,9 @@ def read_txt_to_list(path: str, logger = getLogger(__name__)) -> list[str]:
     try:
         with open(path, 'r') as file:
             content = [line.strip() for line in file]
-        logger.debug(f'成功读取文本文件: {path}')
-    except FileNotFoundError:
-        logger.error(f'找不到文本文件: {path}')
+        logger.debug(LANG["read_txt_to_list_debug"].format(path))
     except Exception as e:
-        logger.error(f'读取文本文件 {path} 时发生错误: \n{str(e)}')
+        logger.error(LANG["read_txt_to_list_error"].format(path, e))
 
     return content
 
@@ -172,54 +162,9 @@ def write_str_to_txt(path: str, content: str, logger):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as file_write:
             file_write.write(content)
-        logger.debug(f'成功写入文本文件: {path}')
+        logger.debug(LANG["write_str_to_txt_debug"].format(path))
     except Exception as e:
-        logger.error(f'写入文本文件 {path} 时发生错误: \n{str(e)}')
-
-
-def read_config(path: str, logger = getLogger(__name__)):
-    """
-    读取配置文件
-
-    :param path: 文本文件的路径
-    :param logger: 日志记录器
-    :return: 返回配置
-    """
-    config_parser = configparser.ConfigParser()
-
-    try:
-        with open(path, 'r') as f:
-            config_parser.read_file(f)
-        logger.debug(f'成功读取配置文件: {path}')
-    except FileNotFoundError:
-        logger.error(f'找不到配置文件: {path}')
-        return {}
-    except Exception as e:
-        logger.error(f'读取配置文件 {path} 时发生错误: \n{str(e)}')
-        return {}
-
-    return config_parser
-
-
-def write_config(path: str, config: dict[str], logger = getLogger(__name__)):
-    """
-    将配置字典写入到配置文件中
-
-    :param path: 配置文件的路径
-    :param config: 要写入的配置字典
-    :param logger: 日志记录器
-    """
-    config_parser = configparser.ConfigParser()
-
-    for section, section_config in config.items():
-        config_parser[section] = section_config
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'w') as f:
-            config_parser.write(f)
-        logger.debug(f'成功写入配置文件: {path}')
-    except Exception as e:
-        logger.error(f'写入配置文件 {path} 时发生错误: \n{str(e)}')
+        logger.error(LANG["write_str_to_txt_error"].format(path, e))
 
 
 def read_json(path: str, logger = getLogger(__name__)):
@@ -237,48 +182,12 @@ def read_json(path: str, logger = getLogger(__name__)):
     try:
         with open(path, 'r', encoding='utf-8') as f:
             lang_dict = json.load(f)
-        logger.debug(f'成功读取 Json 文件: {path}')
-    except FileNotFoundError:
-        logger.error(f'找不到 Json 文件: {path}')
-        lang_dict = {}
+        logger.debug(LANG["read_json_debug"].format(path))
     except Exception as e:
-        logger.error(f'读取 Json 文件 {path} 时发生错误: \n{str(e)}')
+        logger.error(LANG["read_json_error"].format(path, e))
         lang_dict = {}
 
     return lang_dict
-
-
-def get_config(config_parser, section: str, key: str, default_value: str) -> int | str | float:
-    """
-    获取配置
-
-    :param config_parser:
-    :param section: 段落
-    :param key: 配置关键字
-    :param default_value: 默认值
-    """
-
-    def is_float(s):
-        try:
-            float(s)
-            return True
-        except ValueError:
-            return False
-
-    try:
-        if default_value.isdigit():
-            return int(config_parser[section][key]) if config_parser[section][key].isdigit() else int(default_value)
-        elif is_float(default_value):
-            return float(config_parser[section][key]) if is_float(config_parser[section][key]) else float(default_value)
-        else:
-            return config_parser[section][key]
-    except KeyError:
-        if default_value.isdigit():
-            return int(default_value)
-        elif is_float(default_value):
-            return float(default_value)
-        else:
-            return default_value
 
 
 def create_temp_icon_file(base64_string: str, logger) -> str:
@@ -297,9 +206,9 @@ def create_temp_icon_file(base64_string: str, logger) -> str:
         with open(temp_file.name, 'wb') as icon_file:
             icon_file.write(icon_data)
         path = temp_file.name
-        logger.debug(f'临时图标文件创建成功：{temp_file.name}')
+        logger.debug(LANG["create_temp_icon_file_debug"].format(temp_file.name))
     except Exception as e:
-        logger.error(f'临时图标文件创建失败: \n{str(e)}')
+        logger.error(LANG["create_temp_icon_file_error"].format(e))
 
     return path
 
@@ -314,7 +223,7 @@ def remove_target(target: str, logger):
     path = Path(str(target))
 
     if not path.exists():
-        logger.warning(f"要删除目标 {target} 不存在")
+        logger.warning(LANG["no_paths_warning"].format(target))
         return
 
     try:
@@ -323,14 +232,14 @@ def remove_target(target: str, logger):
         elif path.is_file():
             path.unlink()
         else:
-            logger.warning(f"删除目标 {target} 失败，目标可能是一个特殊文件类型")
+            logger.warning(LANG["remove_target_warning1"].format(target))
             return
     except PermissionError:
-        logger.warning(f"删除目标 {target} 失败，去除权限后重试")
+        logger.warning(LANG["remove_target_warning2"].format(target))
         remove_permissions(lambda x: None, path, None)
         path.unlink()
     except Exception as e:
-        logger.error(f"删除目标 {target} 失败: \n{e}")
+        logger.error(LANG["remove_target_error"].format(target, e))
 
 
 def remove_permissions(func, path: Path, _):
@@ -359,9 +268,9 @@ def remove_matched(paths: list[str], logger, pattern_set: set[str]):
 
         for path in matched_paths:
             remove_target(path, logger)
-            logger.info(f"目标 {path} 匹配排除列表，已被删除")
+            logger.info(LANG["remove_matched_info"].format(path))
     except Exception as e:
-        logger.error(f"匹配排除列表时发生错误: \n{e}")
+        logger.error(LANG["remove_matched_error"].format(e))
 
 
 def remove_redundant(path: str, logger):
@@ -388,9 +297,9 @@ def remove_redundant(path: str, logger):
 
                 if not list(temp_dir.iterdir()):
                     temp_dir.rmdir()
-                    logger.info(f"目标 {path} 提取冗余目录完成")
+                    logger.info(LANG["remove_redundant_info"].format(path))
     except Exception as e:
-        logger.error(f"提取冗余目录时发生错误: \n{e}")
+        logger.error(LANG["remove_redundant_error"].format(e))
 
 
 def remove_empty_dirs(path: str, logger):
@@ -404,12 +313,9 @@ def remove_empty_dirs(path: str, logger):
         for p in Path(path).rglob('*'):
             if p.is_dir() and not any(p.iterdir()):
                 p.rmdir()
-                logger.info(f"空目录 {p} 被删除")
+                logger.info(LANG["remove_empty_dirs_info"].format(p))
     except Exception as e:
-        logger.error(f"删除空目录时发生错误: \n{e}")
-
-
-
+        logger.error(LANG["remove_empty_dirs_error"].format(e))
 
 
 def rename_path(path: str, logger, path_set: set[str] = ()) -> tuple[str, set[str]]:
@@ -430,7 +336,7 @@ def rename_path(path: str, logger, path_set: set[str] = ()) -> tuple[str, set[st
             path = f'{original_path}({suffix})'
         path_set.add(path.lower())
     except Exception as e:
-        logger.error(f"目标 {path} 重命名失败: \n{e}")
+        logger.error(LANG["rename_path_error"].format(path, e))
 
     return path, path_set
 
@@ -451,9 +357,9 @@ def group_file_paths(paths_list: List[str], logger) -> defaultdict[str, list]:
             match = archive_regex.match(file_path)
             base_path = match.group(1) if match else os.path.splitext(file_path)[0]
             path_groups[base_path].append(file_path)
-        logger.debug(f'文件路径列表初步分组完成：\n{path_groups}')
+        logger.debug(LANG["group_file_paths_debug"].format(path_groups))
     except Exception as e:
-        logger.error(f'文件分组发生错误: \n{str(e)}')
+        logger.error(LANG["group_file_paths_error"].format(e))
 
     return path_groups
 
@@ -515,9 +421,9 @@ def group_files_by_pattern(target_groups: dict[str, list], logger) -> list[dict]
         if len(other_path_list) > 0:
             other_lists = group_files_by_pattern({'target_path': target_path, 'grouped_file_list': other_path_list}, logger)
             part_lists.extend(other_lists)
-        logger.debug(f'多同名文件分组完成：\n{part_lists}')
+        logger.debug(LANG["group_files_by_pattern_debug"].format(part_lists))
     except Exception as e:
-        logger.error(f'文件分组发生错误: \n{str(e)}')
+        logger.error(LANG["group_files_by_pattern_error"].format(e))
 
     return part_lists
 
@@ -537,9 +443,9 @@ def group_list_by_lens(path_groups: dict[str, list], logger) -> list[dict[str, A
                 full_infos.append({'target_path': path, 'main_file_path': path_list[0], 'grouped_file_list': path_list})
             else:
                 full_infos.extend(group_files_by_pattern({'target_path': path, 'grouped_file_list': path_list}, logger))
-        logger.debug(f'按文件列表长度整理成字典完成：\n{full_infos}')
+        logger.debug(LANG["group_list_by_lens_debug"].format(full_infos))
     except Exception as e:
-        logger.error(f'按文件列表长度整理发生错误: \n{str(e)}')
+        logger.error(LANG["group_list_by_lens_error"].format(e))
 
     return full_infos
 
@@ -564,10 +470,10 @@ def group_files_main(full_infos: List[Dict[str, Any]], logger) -> List[Dict[str,
                 path, path_set = rename_path(info['target_path'], logger, path_set)
                 file_infos.append({'target_path': path, 'main_file': main_file, 'file_list': file_list})
             else:
-                logger.warning(f'文件 {main_file} 不支持，类型为：{file_type}')
-        logger.debug(f'整理压缩文件列表完成，最终文件列表：\n{file_infos}')
+                logger.warning(LANG["group_files_main_warning"].format(main_file, file_type))
+        logger.debug(LANG["group_files_main_debug"].format(file_infos))
     except Exception as e:
-        logger.error(f'整理压缩文件列表时发生错误: \n{str(e)}')
+        logger.error(LANG["group_files_main_error"].format(e))
 
     return file_infos
 

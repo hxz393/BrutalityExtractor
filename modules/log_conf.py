@@ -1,10 +1,9 @@
 import logging
-import datetime
 from logging import getLogger, StreamHandler, Formatter
 from logging.handlers import RotatingFileHandler
 import os
 
-DEFAULT_LOG_FORMAT = '%(asctime)s - %(levelname)s - %(module)s::%(funcName)s - %(message)s'
+from modules.conf_init import DEFAULT_LOG_FORMAT
 
 
 def configure_logging(log_file: bool = True, console_output: bool = False, log_level: str = 'INFO', max_log_size: int = 10, backup_count: int = 10):
@@ -31,9 +30,7 @@ def configure_logging(log_file: bool = True, console_output: bool = False, log_l
         logger.addHandler(ch)
 
     if log_file:
-        # current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        # log_file = f"logs/log_{current_date}.log"
-        log_file = f"logs/Player.log"
+        log_file = f"logs/run.log"
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
         fh = RotatingFileHandler(log_file, maxBytes=max_log_size * 1024 * 1024, backupCount=backup_count)

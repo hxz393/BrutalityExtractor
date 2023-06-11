@@ -5,13 +5,19 @@ import os
 from pathlib import Path
 
 from modules.file_ops import get_target_size
+from modules.conf_init import LANG
 
 
-def get_resource_path(relative_path):
-    """ 获取资源的绝对路径 """
+def get_resource_path(relative_path: str) -> str:
+    """
+    获取资源的绝对路径，针对PyInstaller打包的可执行文件
+
+    :param relative_path: 相对路径
+    :return: 绝对路径
+    """
     try:
         base_path = sys._MEIPASS
-    except Exception:
+    except AttributeError:
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
@@ -27,11 +33,11 @@ def unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
     :param password_set: 密码集合，格式为：{'pass1', 'pass2'...}
     :param logger: 日志记录器
 
-    :return: 返回解压结果字典，格式为：{'code': 2, 'std': f"", 'file_info': file_info}
+    :return: 返回解压结果字典，格式为：{'code': 状态码, 'std': 结果展示文本, 'file_info': 原始file_info字典}
     """
     target_path = file_info['target_path']
     main_file = file_info['main_file']
-    result_data = {'code': 2, 'std': f"", 'file_info': file_info}
+    result_data = {'code': 2, 'std': "", 'file_info': file_info}
 
     if not password_set:
         password_set = {''}
@@ -40,7 +46,7 @@ def unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
         unzip_command = [BIN_7Z_PATH, 'x', '-aoa', f'-o{target_path}', f'-p{passwd}', f'--', f'{main_file}']
 
         try:
-            if os.name == 'nt':  # check if the OS is Windows
+            if os.name == 'nt':
                 si = subprocess.STARTUPINFO()
                 si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 result = subprocess.run(unzip_command, capture_output=True, text=True, startupinfo=si)
@@ -48,60 +54,61 @@ def unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
                 result = subprocess.run(unzip_command, capture_output=True, text=True)
         except Exception as e:
             result_data['code'] = 1
-            result_data['std'] = f"命令执行失败：{unzip_command}，错误信息：{str(e)}"
+            result_data['std'] = LANG["unzip_run_failed"].format(unzip_command, e)
             logger.warning(result_data['std'])
             return result_data
-        logger.debug(f'解压命令：{unzip_command}\n命令输出：\n{result.stdout.strip()}')
+
+        logger.debug(LANG["unzip_log_debug"].format(unzip_command, result.stdout.strip()))
 
         if result.returncode == 0:
             info_size = int(re.search(r"Size:\s+(\d+)", result.stdout).group(1)) if re.search(r"Size:\s+(\d+)", result.stdout) else 0
             size_target = sum(get_target_size(str(f), logger) for f in Path(target_path).rglob('*') if f.is_file())
             if info_size == size_target:
                 result_data['code'] = 0
-                result_data['std'] = f'文件解压成功：{main_file}'
+                result_data['std'] = LANG["unzip_success"].format(main_file)
                 logger.info(result_data['std'])
                 return result_data
             else:
-                result_data['std'] = f'文件解压失败：{main_file}，目标大小不匹配'
+                result_data['std'] = LANG["unzip_failed1"].format(main_file)
                 logger.warning(result_data['std'])
                 return result_data
         elif result.returncode == 2 and re.search(r"Wrong password", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，错误密码：{passwd}'
+            result_data['std'] = LANG["unzip_failed2"].format(main_file, passwd)
             logger.debug(result_data['std'])
             continue
         elif result.returncode == 2 and re.search(r"Cannot open the file as archive", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，不支持的文件类型'
+            result_data['std'] = LANG["unzip_failed3"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
-        elif result.returncode == 2 and re.search(r"系统找不到指定的", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，找不到压缩文件'
+        elif result.returncode == 2 and re.search(r"系统找不到指定的|Cannot find", result.stderr):
+            result_data['std'] = LANG["unzip_failed4"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
         elif result.returncode == 2 and re.search(r"Missing volume :", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，缺少分卷：{re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None}'
+            result_data['std'] = LANG["unzip_failed5"].format(main_file, re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None)
             logger.warning(result_data['std'])
             return result_data
         elif result.returncode == 2 and re.search(r"CRC Failed|CRC Error", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，CRC校验失败'
+            result_data['std'] = LANG["unzip_failed6"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
         elif result.returncode == 2 and re.search(r"Headers Error", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，文件头错误'
+            result_data['std'] = LANG["unzip_failed7"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
         elif result.returncode == 2 and re.search(r"Unexpected end of archive", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，文件不完整'
+            result_data['std'] = LANG["unzip_failed8"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
         elif result.returncode == 2 and re.search(r"Data Error :", result.stderr):
-            result_data['std'] = f'文件解压失败：{main_file}，文件已损坏'
+            result_data['std'] = LANG["unzip_failed9"].format(main_file)
             logger.warning(result_data['std'])
             return result_data
         else:
-            result_data['std'] = f'文件解压失败：{main_file}，错误代码：{result.returncode}'
+            result_data['std'] = LANG["unzip_failed10"].format(main_file, result.returncode)
             logger.warning(result_data['std'])
             logger.error(result.stderr)
             return result_data
-    result_data['std'] = f'文件解压失败：{main_file}，匹配密码全部失败'
+    result_data['std'] = LANG["unzip_failed11"].format(main_file)
     logger.warning(result_data['std'])
     return result_data

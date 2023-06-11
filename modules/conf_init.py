@@ -1,32 +1,102 @@
-from modules.file_ops import read_config, get_config, write_config
+import configparser
+from logging import getLogger
+import os
+
 from config.lang import LANG_DICT
 
+def read_config(path: str, logger = getLogger(__name__)):
+    """
+    读取配置文件
+
+    :param path: 文本文件的路径
+    :param logger: 日志记录器
+    :return: 返回配置
+    """
+    config_parser = configparser.ConfigParser()
+
+    try:
+        with open(path, 'r') as f:
+            config_parser.read_file(f)
+        return config_parser
+    except Exception as e:
+        logger.debug(str(e))
+        return {}
+
+
+def write_config(path: str, config: dict[str], logger = getLogger(__name__)):
+    """
+    将配置字典写入到配置文件中
+
+    :param path: 配置文件的路径
+    :param config: 要写入的配置字典
+    :param logger: 日志记录器
+    """
+    config_parser = configparser.ConfigParser()
+
+    for section, section_config in config.items():
+        config_parser[section] = section_config
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            config_parser.write(f)
+    except Exception as e:
+        logger.debug(str(e))
+
+
+def get_config(config_parser, section: str, key: str, default_value: str) -> int | str | float:
+    """
+    获取配置
+
+    :param config_parser:
+    :param section: 段落
+    :param key: 配置关键字
+    :param default_value: 默认值
+    """
+
+    def is_float(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    try:
+        if default_value.isdigit():
+            return int(config_parser[section][key]) if config_parser[section][key].isdigit() else int(default_value)
+        elif is_float(default_value):
+            return float(config_parser[section][key]) if is_float(config_parser[section][key]) else float(default_value)
+        else:
+            return config_parser[section][key]
+    except KeyError:
+        if default_value.isdigit():
+            return int(default_value)
+        elif is_float(default_value):
+            return float(default_value)
+        else:
+            return default_value
+
 # 读取配置文件
-config_parser = read_config(r'config/config.ini')
+CP = read_config(r'config/config.ini')
 
-if not config_parser:
-    write_config(r'config/config.ini', {'main': {}})
-    config_parser = read_config(r'config/config.ini')
-
-path_zip_config = get_config(config_parser, 'main', 'path_zip', '')
-path_dest_config = get_config(config_parser, 'main', 'path_dest', '')
-password_config = get_config(config_parser, 'main', 'password', '')
-parallel_config = get_config(config_parser, 'main', 'parallel', '1')
-no_warnning_config = get_config(config_parser, 'main', 'no_warnning', '0')
-is_delete_config = get_config(config_parser, 'main', 'is_delete', '0')
-log_level_config = get_config(config_parser, 'main', 'log_level', 'INFO')
-log_size_config = get_config(config_parser, 'main', 'log_size', '10')
-log_count_config = get_config(config_parser, 'main', 'log_count', '10')
-is_extra_config = get_config(config_parser, 'main', 'is_extra', '0')
-is_redundant_config = get_config(config_parser, 'main', 'is_redundant', '0')
-is_empty_config = get_config(config_parser, 'main', 'is_empty', '0')
-xcl_dir_config = get_config(config_parser, 'main', 'xcl_dir', '')
-xcl_file_config = get_config(config_parser, 'main', 'xcl_file', '')
-no_tooltip_config = get_config(config_parser, 'main', 'no_tooltip', '0')
-mini_skin_config = get_config(config_parser, 'main', 'mini_skin', '0')
-theme_config = get_config(config_parser, 'main', 'theme', 'yeti')
-lang_config = get_config(config_parser, 'main', 'lang', 'ENG')
-alpha_config = get_config(config_parser, 'main', 'alpha', '1.00')
+path_zip_config = get_config(CP, 'main', 'path_zip', '')
+path_dest_config = get_config(CP, 'main', 'path_dest', '')
+password_config = get_config(CP, 'main', 'password', '')
+parallel_config = get_config(CP, 'main', 'parallel', '1')
+no_warnning_config = get_config(CP, 'main', 'no_warnning', '0')
+is_delete_config = get_config(CP, 'main', 'is_delete', '0')
+log_level_config = get_config(CP, 'main', 'log_level', 'INFO')
+log_size_config = get_config(CP, 'main', 'log_size', '10')
+log_count_config = get_config(CP, 'main', 'log_count', '10')
+is_extra_config = get_config(CP, 'main', 'is_extra', '0')
+is_redundant_config = get_config(CP, 'main', 'is_redundant', '0')
+is_empty_config = get_config(CP, 'main', 'is_empty', '0')
+xcl_dir_config = get_config(CP, 'main', 'xcl_dir', '')
+xcl_file_config = get_config(CP, 'main', 'xcl_file', '')
+no_tooltip_config = get_config(CP, 'main', 'no_tooltip', '0')
+mini_skin_config = get_config(CP, 'main', 'mini_skin', '0')
+theme_config = get_config(CP, 'main', 'theme', 'pulse')
+lang_config = get_config(CP, 'main', 'lang', 'ENG')
+alpha_config = get_config(CP, 'main', 'alpha', '1.00')
 
 # 图标
 FONT_SIZE = 10 if mini_skin_config else 16
@@ -36,10 +106,22 @@ THEME_LIST = ["yeti", "simplex", "morph", "cerculean", "sandstone", "united", "c
 theme_config = theme_config if theme_config in THEME_LIST else 'yeti'
 
 # 初始化日志配置
+DEFAULT_LOG_FORMAT = '%(asctime)s - %(levelname)s - %(module)s::%(funcName)s - %(message)s'
 LOG_LEVEL_LIST = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 log_level_config = log_level_config if log_level_config in LOG_LEVEL_LIST else 'INFO'
 
-
 # 初始化语言配置
 LANG_LIST = ['ENG', 'CHS']
-LANG=LANG_DICT[lang_config if lang_config in LANG_LIST else 'ENG']
+lang_config = lang_config if lang_config in LANG_LIST else 'ENG'
+LANG=LANG_DICT[lang_config]
+
+# 支持文件类型列表
+ZIP_FILE_TYPE_DICT = {
+    'application/x-bzip2': '.bz2',
+    'application/x-gzip': '.gz',
+    'application/x-rar': '.rar',
+    'application/x-tar': '.tar',
+    'application/x-xz': '.xz',
+    'application/zip': '.zip',
+    'application/x-7z-compressed': '.7z'
+}

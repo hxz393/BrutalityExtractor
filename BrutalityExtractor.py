@@ -22,8 +22,7 @@ from modules.file_ops import *
 from modules.math_until import *
 from modules.conf_init import *
 
-
-logger = configure_logging(console_output=True, log_level = log_level_config, max_log_size = log_size_config, backup_count = log_count_config)
+logger = configure_logging(console_output=True, log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
 
 
 def thread_it(func, *args, daemon=True, name=None):
@@ -85,7 +84,7 @@ class ToolTip:
         self.tooltip_window.wm_overrideredirect(True)
         self.tooltip_window.wm_geometry(f"+{x}+{y}")
 
-        label = ttk.Label(self.tooltip_window, bootstyle='inverse-light', text=self.text, relief="solid", borderwidth=1, padding=(5,1))
+        label = ttk.Label(self.tooltip_window, bootstyle='inverse-light', text=self.text, relief="solid", borderwidth=1, padding=(5, 1))
         label.pack()
 
     def hide_tooltip(self, event=None):
@@ -108,7 +107,6 @@ class CollapsingFrame(ttk.Frame):
         self.img_down = icon_to_image("angle-double-down", fill="#FFFFFF", scale_to_height=ICO_SIZE)
         self.img_up = icon_to_image("angle-double-up", fill="#FFFFFF", scale_to_height=ICO_SIZE)
 
-
     def add(self, child, title="", bootstyle=PRIMARY, image='', display=0, **kwargs):
         if child.winfo_class() != 'TFrame':
             return
@@ -117,14 +115,13 @@ class CollapsingFrame(ttk.Frame):
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
 
-
         image_label = ttk.Label(
             master=frm,
             bootstyle=(style_color, INVERSE),
             compound=LEFT,
             image=image
         )
-        image_label.pack(side=LEFT, fill=BOTH, padx=10)
+        image_label.pack(side=LEFT, padx=10)
 
         header = ttk.Label(
             master=frm,
@@ -132,8 +129,7 @@ class CollapsingFrame(ttk.Frame):
             bootstyle=(style_color, INVERSE),
             font=('', FONT_SIZE),
         )
-        header.pack(side=LEFT, fill=BOTH, padx=10)
-
+        header.pack(side=LEFT, fill=BOTH)
 
         if kwargs.get('textvariable'):
             header.configure(textvariable=kwargs.get('textvariable'))
@@ -158,7 +154,6 @@ class CollapsingFrame(ttk.Frame):
             btn['image'] = self.img_up
             child.grid_remove()
 
-
     def _toggle_open_close(self, child):
         if child.winfo_viewable():
             child.grid_remove()
@@ -168,7 +163,6 @@ class CollapsingFrame(ttk.Frame):
             child.btn.configure(image=self.img_down)
 
         self.update_size()
-
 
     def update_size(self):
         self.update_idletasks()
@@ -182,10 +176,11 @@ class BrutalityExtractor:
     软件名：BrutalityExtractor\n
     版本：1.0.0\n
     更新时间：2023.06.10\n
-    打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
+    打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin\7z.exe;bin' --add-binary 'bin\7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
     UI 文档：https://ttkbootstrap.readthedocs.io/en/latest/zh/\n
     """
+
     def __init__(self):
         # 主窗口配置
         self.root = ttk.Window()
@@ -217,6 +212,7 @@ class BrutalityExtractor:
                 entry.delete(0, END)
                 entry.insert(0, file_path)
                 entry.configure(foreground='black')
+
         def select_directory(entry, var):
             dir_path = filedialog.askdirectory()
             if dir_path:
@@ -238,14 +234,14 @@ class BrutalityExtractor:
                 self.menubutton_logl.config(bootstyle="dark-outline")
 
         # 写入配置
-        def on_option_change(*args, config_key='',config_var=ttk.StringVar()):
-            config_parser.set('main', config_key, str(config_var.get()))
-            write_config(r'config/config.ini', config_parser, logger)
+        def on_option_change(*args, config_key='', config_var=ttk.StringVar()):
+            CP.set('main', config_key, str(config_var.get()))
+            write_config(r'config/config.ini', CP, logger)
 
         # 修改主题
-        def change_theme(theme_name):
-            self.style.theme_use(theme_name)
-            self.var_theme.set(theme_name)
+        def change_theme(theme):
+            self.style.theme_use(theme)
+            self.var_theme.set(theme)
 
         # 修改语言
         def change_language(lang):
@@ -259,6 +255,23 @@ class BrutalityExtractor:
         def change_alpha(var):
             self.root.attributes("-alpha", var)
 
+        # 文本框右键弹出窗口
+        def create_right_click_menu(widget):
+            def rightClick(event):
+                rightClick_Menu = tk.Menu(None, tearoff=0, takefocus=0)
+                rightClick_Menu.add_command(label=LANG["RM_cut"], command=lambda: widget.event_generate('<<Cut>>'))
+                rightClick_Menu.add_command(label=LANG["RM_copy"], command=lambda: widget.event_generate('<<Copy>>'))
+                rightClick_Menu.add_command(label=LANG["RM_paste"], command=lambda: widget.event_generate('<<Paste>>'))
+                rightClick_Menu.add_separator()
+                rightClick_Menu.add_command(label=LANG["RM_select_all"], command=lambda: widget.event_generate('<<SelectAll>>'))
+                rightClick_Menu.add_command(label=LANG["RM_delete"], command=lambda: widget.event_generate('<<Clear>>'))
+                if isinstance(widget, tk.Text):
+                    rightClick_Menu.add_command(label=LANG["RM_undo"], command=lambda: widget.event_generate('<<Undo>>'))
+                    rightClick_Menu.add_command(label=LANG["RM_redo"], command=lambda: widget.event_generate('<<Redo>>'))
+                rightClick_Menu.tk_popup(event.x_root, event.y_root)
+
+            widget.bind("<Button-3>", rightClick)
+
         # 建立变量函数
         def create_config_var(value, config_key):
             if isinstance(value, int):
@@ -271,7 +284,6 @@ class BrutalityExtractor:
             var.trace_add("write", partial(on_option_change, config_key=config_key, config_var=var))
 
             return var
-
 
         cf = CollapsingFrame(self.root)
         cf.pack(fill=BOTH)
@@ -293,8 +305,9 @@ class BrutalityExtractor:
 
         self.entry_path = ttk.Entry(self.basic_area, bootstyle="dark", textvariable=self.var_path, validate="focus", validatecommand=(self.empty_func, '%P'))
         self.entry_path.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
+        create_right_click_menu(self.entry_path)
 
-        self.bottom_path = ttk.Button(self.basic_area, text=LANG["bottom_path_text"],  bootstyle="secondary-outline", command=lambda: select_directory(self.entry_path, self.var_path))
+        self.bottom_path = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_directory(self.entry_path, self.var_path))
         self.bottom_path.grid(row=1, column=2, sticky=E, padx=(10, 15), pady=(15, 0))
 
         ToolTip(self.label_path, LANG["tooltip_label_path"], self.var_ntlp)
@@ -308,8 +321,9 @@ class BrutalityExtractor:
 
         self.entry_dest = ttk.Entry(self.basic_area, textvariable=self.var_dest, validate="focus")
         self.entry_dest.grid(row=2, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
+        create_right_click_menu(self.entry_dest)
 
-        self.bottom_dest = ttk.Button(self.basic_area, text=LANG["bottom_path_text"],  bootstyle="secondary-outline", command=lambda: select_directory(self.entry_dest, self.var_dest))
+        self.bottom_dest = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_directory(self.entry_dest, self.var_dest))
         self.bottom_dest.grid(row=2, column=2, sticky=E, padx=(10, 15), pady=(15, 0))
 
         ToolTip(self.label_dest, LANG["tooltip_label_dest"], self.var_ntlp)
@@ -323,6 +337,7 @@ class BrutalityExtractor:
 
         self.entry_pass = ttk.Entry(self.basic_area, textvariable=self.var_pass, validate="focus", validatecommand=('', '%P'))
         self.entry_pass.grid(row=3, column=1, sticky=W + E, padx=(0, 0), pady=(15, 15))
+        create_right_click_menu(self.entry_pass)
 
         self.bottom_pass = ttk.Button(self.basic_area, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_pass, self.var_pass))
         self.bottom_pass.grid(row=3, column=2, sticky=E, padx=(10, 15), pady=(15, 15))
@@ -566,6 +581,7 @@ class BrutalityExtractor:
 
         self.entry_xcld = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xcld, validate="focus", validatecommand=('', '%P'))
         self.entry_xcld.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(0, 0))
+        create_right_click_menu(self.entry_xcld)
 
         self.bottom_xcld = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_xcld, self.var_xcld))
         self.bottom_xcld.grid(row=1, column=2, sticky=E, padx=(10, 0), pady=(0, 0))
@@ -581,6 +597,7 @@ class BrutalityExtractor:
 
         self.entry_xclf = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xclf, validate="focus", validatecommand=('', '%P'))
         self.entry_xclf.grid(row=2, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
+        create_right_click_menu(self.entry_xclf)
 
         self.bottom_xclf = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_xclf, self.var_xclf))
         self.bottom_xclf.grid(row=2, column=2, sticky=E, padx=(10, 0), pady=(15, 0))
@@ -600,7 +617,7 @@ class BrutalityExtractor:
         self.log_area_fr1.columnconfigure(0, weight=1)
 
         # 结果显示文本框相关元素
-        self.text_logs = tk.Text(self.log_area_fr1, wrap=NONE, height=15, width=56)
+        self.text_logs = tk.Text(self.log_area_fr1, wrap=NONE, height=15, width=56, undo=True)
         self.text_logs.grid(row=0, column=0, sticky=W + E + N + S)
         self.text_logs.tag_config("red", foreground="#f04124")
         self.text_logs.tag_config("green", foreground="#43ac6a")
@@ -610,6 +627,8 @@ class BrutalityExtractor:
         self.text_logs_scrollbar.configure(command=self.text_logs.yview)
         self.text_logs.configure(yscrollcommand=self.text_logs_scrollbar.set)
 
+        create_right_click_menu(self.text_logs)
+
         ## 各种按钮区块
         self.frame_bottom = ttk.Frame(self.root, bootstyle="light")
         self.frame_bottom.pack(fill='x')
@@ -617,7 +636,8 @@ class BrutalityExtractor:
 
         # 项目主页相关元素
         self.img_github = icon_to_image("github", fill="#008cba", scale_to_height=ICO_SIZE)
-        self.bottom_github = ttk.Button(self.frame_bottom, text=LANG["bottom_github_text"], image=self.img_github, bootstyle="light-outline", cursor='heart', command=lambda: webbrowser.open("https://github.com/hxz393/BrutalityExtractor", new=0))
+        self.bottom_github = ttk.Button(self.frame_bottom, text=LANG["bottom_github_text"], image=self.img_github, bootstyle="light-outline", cursor='heart',
+                                        command=lambda: webbrowser.open("https://github.com/hxz393/BrutalityExtractor", new=0))
         self.bottom_github.grid(row=0, column=0, sticky='E')
         ToolTip(self.bottom_github, LANG["bottom_github_text"], self.var_ntlp)
 
@@ -629,14 +649,14 @@ class BrutalityExtractor:
 
         # 打开日志相关元素
         self.img_logpath = icon_to_image("envelope-open-text", fill="#008cba", scale_to_height=ICO_SIZE)
-        self.bottom_logpath = ttk.Button(self.frame_bottom, text=LANG["bottom_logpath_text"], image=self.img_logpath, bootstyle="light-outline",  command=lambda: os.startfile('logs'))
+        self.bottom_logpath = ttk.Button(self.frame_bottom, text=LANG["bottom_logpath_text"], image=self.img_logpath, bootstyle="light-outline", command=lambda: os.startfile('logs'))
         self.bottom_logpath.grid(row=0, column=2, sticky='E')
         ToolTip(self.bottom_logpath, LANG["bottom_logpath_text"], self.var_ntlp)
 
         # 开始运行按钮
         self.img_run = icon_to_image("play", fill="#FFFFFF", scale_to_height=ICO_SIZE)
         self.img_wait = icon_to_image("clock", fill=self.style.theme.colors.primary, scale_to_height=ICO_SIZE)
-        self.bottom_run = ttk.Button(self.frame_bottom, text=LANG["bottom_run_text"], image=self.img_run, bootstyle="danger",  command=lambda: thread_it(self.main, ))
+        self.bottom_run = ttk.Button(self.frame_bottom, text=LANG["bottom_run_text"], image=self.img_run, bootstyle="danger", command=lambda: thread_it(self.main, ))
         self.bottom_run.config(compound=LEFT) if self.var_mini.get() else NONE
         self.bottom_run.grid(row=0, column=6, sticky='WE')
         ToolTip(self.bottom_run, LANG["bottom_run_text"], self.var_ntlp)
@@ -686,7 +706,6 @@ class BrutalityExtractor:
         finally:
             self.bottom_update['stat'] = 'normal'
 
-
     # 附加功能函数
     def extra(self):
         path_dest = self.entry_dest.get()
@@ -733,8 +752,6 @@ class BrutalityExtractor:
 
         logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))
 
-
-# todo 主函数优化
     # 主函数
     def main(self):
         # 初始化变量
@@ -837,12 +854,11 @@ class BrutalityExtractor:
 
             # 内存使用率高警告
             memory_usage = psutil.virtual_memory().percent
-            if memory_usage > 50 and not no_warnning:
+            if memory_usage > 70 and not no_warnning:
                 self.root.after(10, lambda: Messagebox.show_warning(
                     title=LANG['msg_warning_title'],
                     message=LANG["memory_usage_warning"]))
                 return
-
 
             def update_progress(total):
                 value = var_prog.get()
@@ -850,7 +866,6 @@ class BrutalityExtractor:
                     value += 1
                     var_prog.set(value)
                     self.bottom_run["value"] = value
-
 
             # 解压后操作
             def post_action(result):
@@ -864,7 +879,7 @@ class BrutalityExtractor:
                     self.text_logs.insert(END, result['std'] + '\n', "red")
                 elif return_code == 0:
                     [remove_target(file_del, logger) for file_del in result['file_info']['file_list']] if is_delete == 1 else None
-                    finished_counts +=1
+                    finished_counts += 1
                     self.text_logs.insert(END, result['std'] + '\n', "green")
 
                 update_progress(file_in_total_number)
@@ -886,7 +901,6 @@ class BrutalityExtractor:
             logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed))
             self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"], message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed)))
 
-
         # 故障处理
         except Exception as e:
             logger.error(LANG["main_error"].format('#' * 6, '#' * 6, e))
@@ -898,7 +912,6 @@ class BrutalityExtractor:
             self.bottom_run.config(compound=LEFT) if self.var_mini.get() else NONE
             self.bottom_run.grid(row=0, column=6, sticky='WE')
 
-
     # 启动Tkinter
     def run(self):
         self.root.mainloop()
@@ -907,9 +920,8 @@ class BrutalityExtractor:
 if __name__ == '__main__':
     freeze_support()
     set_priority()
+    if not CP:
+        write_config(r'config/config.ini', {'main': {}}, logger)
+        CP = read_config(r'config/config.ini', logger)
     app = BrutalityExtractor()
     app.run()
-
-# todo Github文档
-# todo 软件发布
-# todo 其他模块翻译
