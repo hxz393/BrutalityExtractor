@@ -1,6 +1,5 @@
 import time
 import os.path
-import locale
 import argparse
 from multiprocessing import Pool, freeze_support
 
@@ -8,14 +7,14 @@ from modules.log_conf import configure_logging
 from modules.file_unzip import unzip
 from modules.file_ops import *
 from modules.math_until import *
-from config.lang import LANG_DICT
+from modules.conf_init import LANG
 
 logger=configure_logging(log_file=False, console_output=True)
 
 def main(path_zip: str, password: str, parallel: str):
     """
-    Command-line mode
-    Package：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin\7z.exe;bin' --add-binary 'bin\7z.dll;bin' --console BrutalityExtractorCli.py
+    Command-line mode\n
+    Package：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --console BrutalityExtractorCli.py
 
     :param path_zip: Directory containing the compressed files
     :param password: Password for the compressed file
@@ -25,10 +24,6 @@ def main(path_zip: str, password: str, parallel: str):
     path_zip = str(path_zip)
     password = str(password) if password else ''
     parallel = int(parallel) if parallel.isdigit() else 1
-    system_language, _ = locale.getdefaultlocale()
-    language = 'CHS' if system_language == 'zh_CN' else 'ENG'
-    LANG = LANG_DICT[language]
-
 
     print('BrutalityExtractor Copyright 2023 by assassing')
     logger.info(LANG["main_info_start"].format("#" * 6, "#" * 6))

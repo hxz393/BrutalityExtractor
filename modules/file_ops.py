@@ -477,4 +477,3 @@ def group_files_main(full_infos: List[Dict[str, Any]], logger) -> List[Dict[str,
 
     return file_infos
 
-

@@ -175,10 +175,11 @@ class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
     版本：1.0.0\n
-    更新时间：2023.06.10\n
-    打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin\7z.exe;bin' --add-binary 'bin\7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py
+    更新时间：2023.06.11\n
+    打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
     UI 文档：https://ttkbootstrap.readthedocs.io/en/latest/zh/\n
+    图标来源：https://fontawesome.com/v5/search?o=r&m=free&f=brands%2Cclassic\n
     """
 
     def __init__(self):
