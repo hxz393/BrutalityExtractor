@@ -1,4 +1,4 @@
-# [English](https://github.com/hxz393/BrutalityExtractor/blob/main/README_EN.md) | [中文]((https://github.com/hxz393/BrutalityExtractor/blob/main/README.md) )
+# [English](https://github.com/hxz393/BrutalityExtractor/blob/main/README_EN.md) | [中文](https://github.com/hxz393/BrutalityExtractor/blob/main/README.md)
 
 # 软件介绍
 
@@ -14,7 +14,7 @@ BrutalityExtractor 是一款专为高性能系统打造的暴力解压软件。�
 
 软件截图：
 
-![1.0.0 版本截图](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/master/capture/v1.0.0.jpg)
+![1.0.0 版本截图](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/v1.0.0.jpg)
 
 
 
@@ -84,7 +84,7 @@ BrutalityExtractor 是一款专为高性能系统打造的暴力解压软件。�
    git clone https://github.com/hxz393/BrutalityExtractor.git
    ```
 
-   或者在 [项目主页](https://github.com/hxz393/BrutalityExtractor) 点击绿色`<> Code` 按钮选择 `Download ZIP` 选项，[下载](https://github.com/hxz393/BaiduPanFilesTransfers/archive/refs/heads/master.zip) 源码压缩包。下载完毕后用压缩软件或命令工具解压缩。
+   或者在 [项目主页](https://github.com/hxz393/BrutalityExtractor) 点击绿色`<> Code` 按钮选择 `Download ZIP` 选项，[下载](https://github.com/hxz393/BrutalityExtractor/archive/refs/heads/main.zip) 源码压缩包。下载完毕后用压缩软件或命令工具解压缩。
 
 2. 使用命令切换到项目路径下面。
 
@@ -121,7 +121,7 @@ BrutalityExtractor 是一款专为高性能系统打造的暴力解压软件。�
 
 ## 开源许可
 
-本软件采用 [GPL-3.0 license](https://github.com/hxz393/BaiduPanFilesTransfers/blob/master/LICENSE) 源授权许可协议，若违背开源社区的基本准则，将开源项目据为私有用于商业用途，属于侵权行为，本人将追究法律责任。
+本软件采用 [GPL-3.0 license](https://github.com/hxz393/BrutalityExtractor/blob/main/LICENSE) 源授权许可协议，若违背开源社区的基本准则，将开源项目据为私有用于商业用途，属于侵权行为，本人将追究法律责任。
 
 用到的第三方开源库：
 
