@@ -67,7 +67,7 @@ A general table of hard disk specifications and corresponding process numbers is
 Software download methods:
 
 - Method 1: Go to the [release](https://github.com/hxz393/BrutalityExtractor/releases) page to download the latest executable file, named `BrutalityExtractor.exe` or `BrutalityExtractorCli.exe`. It can be used directly after download.
-- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor v1.0.0.zip) download.
+- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor v1.0.1.zip) download.
 
 
 
@@ -156,6 +156,8 @@ Extraction Directory or Destination Directory is a mandatory field.
   Enter a single password or the location of the password list text file. If the compressed file does not have a password, any password can be used to decompress it. If there is a password, the software will try the passwords in the list one by one until the correct one is found or all have failed.
 
   The software itself does not process password attempts with multiple processes. If you need to brute force crack the compressed file password, you can divide the password list into multiple parts and run multiple instances of the software. Set the log level to Debug to see the attempt results in the log. Do not use this feature for illegal purposes.
+
+  To make sure the password is read correctly, please save the text using the UTF-8 encoding format.
 
 
 
@@ -313,6 +315,14 @@ No. Please try professional software, such as `everything`, `PowerToys`, and oth
 # Update Log
 
 To avoid too long update logs, only the most recent update log is retained.
+
+## Version 1.0.1 (2023.06.12)
+
+Fixes:
+
+1. When reading text, specify to use UTF-8 encoding.
+
+
 
 ## Version 1.0.0 (2023.06.11)
 

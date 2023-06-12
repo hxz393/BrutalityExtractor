@@ -141,7 +141,7 @@ def read_txt_to_list(path: str, logger = getLogger(__name__)) -> list[str]:
     content = []
 
     try:
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding="utf-8") as file:
             content = [line.strip() for line in file]
         logger.debug(LANG["read_txt_to_list_debug"].format(path))
     except Exception as e:
@@ -160,7 +160,7 @@ def write_str_to_txt(path: str, content: str, logger):
     """
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'w') as file_write:
+        with open(path, 'w', encoding="utf-8") as file_write:
             file_write.write(content)
         logger.debug(LANG["write_str_to_txt_debug"].format(path))
     except Exception as e:

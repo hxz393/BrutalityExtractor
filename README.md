@@ -68,7 +68,7 @@ BrutalityExtractor 是一款专为高性能系统打造的暴力解压软件。�
 
 - 方式一：到 [release](https://github.com/hxz393/BrutalityExtractor/releases) 页面下载最新版的可执行文件，文件名为 `BrutalityExtractor.exe` 或 `BrutalityExtractorCli.exe` ，下载完毕可直接打开使用。
 - 方式二：[百度网盘](https://pan.baidu.com/s/1LiL_Kvwcjsl44UvJxJIUTg?pwd=6666)分流下载。
-- 方式三：[直连](https://www.x2b.net/download/BrutalityExtractor%20v1.0.0.zip)下载。
+- 方式三：[直连](https://www.x2b.net/download/BrutalityExtractor%20v1.0.1.zip)下载。
 
 
 
@@ -157,6 +157,8 @@ BrutalityExtractor 是一款专为高性能系统打造的暴力解压软件。�
   输入单个密码或者密码列表文本文件位置。如果压缩包没有密码，随便输入什么密码都可以解压。如果有密码，会挨个尝试密码列表中的密码，直到密码正确或全部失败。
 
   软件本身没有对密码尝试做多进程处理。如果需要暴力破解压缩包密码，可将密码列表分为多份，运行多个软件实例来跑。将日志等级设为 Debug，可在日志中看到尝试结果。此功能请勿用于非法用途。
+
+  为了能正确读取特殊密码，密码文本文件请使用 `UTF-8` 编码格式储存。
 
 
 
@@ -315,6 +317,14 @@ Processing speed: 183.08 MB/s
 
 # 更新日志
 为避免更新日志过长，只保留最近更新日志。
+
+## 版本 1.0.1（2023.06.12）
+
+修复内容：
+
+1. 添加读取文本时，指定使用 UTF-8 编码。
+
+
 
 ## 版本 1.0.0（2023.06.11）
 
