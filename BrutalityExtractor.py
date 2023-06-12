@@ -259,14 +259,14 @@ class BrutalityExtractor:
         # 文本框右键弹出窗口
         def create_right_click_menu(widget):
             def rightClick(event):
-                rightClick_Menu = tk.Menu(None, tearoff=0, takefocus=0)
+                rightClick_Menu = ttk.Menu(None, tearoff=1, takefocus=0)
                 rightClick_Menu.add_command(label=LANG["RM_cut"], command=lambda: widget.event_generate('<<Cut>>'))
                 rightClick_Menu.add_command(label=LANG["RM_copy"], command=lambda: widget.event_generate('<<Copy>>'))
                 rightClick_Menu.add_command(label=LANG["RM_paste"], command=lambda: widget.event_generate('<<Paste>>'))
                 rightClick_Menu.add_separator()
                 rightClick_Menu.add_command(label=LANG["RM_select_all"], command=lambda: widget.event_generate('<<SelectAll>>'))
                 rightClick_Menu.add_command(label=LANG["RM_delete"], command=lambda: widget.event_generate('<<Clear>>'))
-                if isinstance(widget, tk.Text):
+                if isinstance(widget, ttk.Text):
                     rightClick_Menu.add_command(label=LANG["RM_undo"], command=lambda: widget.event_generate('<<Undo>>'))
                     rightClick_Menu.add_command(label=LANG["RM_redo"], command=lambda: widget.event_generate('<<Redo>>'))
                 rightClick_Menu.tk_popup(event.x_root, event.y_root)
