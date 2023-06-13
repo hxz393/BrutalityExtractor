@@ -724,29 +724,30 @@ class BrutalityExtractor:
                 message=LANG["extra_path_dest_warning_msg"]))
             return
 
-        paths = get_folder_paths(path_dest, logger)
-        files = get_file_paths(path_dest, logger)
-
-        if not paths and not files:
+        if not get_folder_paths(path_dest, logger) and not get_file_paths(path_dest, logger):
             self.text_logs.insert(END, LANG["extra_no_action"].format(path_dest), "green")
             return
 
         if xcld != {''}:
+            paths = get_folder_paths(path_dest, logger)
             remove_matched(paths, logger, xcld)
             del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_xcld_info"].format(path_dest, del_count), "green")
 
         if xclf != {''}:
+            files = get_file_paths(path_dest, logger)
             remove_matched(files, logger, xclf)
             del_count = len(files) - len(get_file_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_xclf_info"].format(path_dest, del_count), "green")
 
         if is_redundant:
+            paths = get_folder_paths(path_dest, logger)
             [remove_redundant(i, logger) for i in get_subdirectories(path_dest, logger)]
             del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_is_redundant_info"].format(path_dest, del_count), "green")
 
         if is_empty:
+            paths = get_folder_paths(path_dest, logger)
             remove_empty_dirs(path_dest, logger)
             del_count = len(paths) - len(get_folder_paths(path_dest, logger))
             self.text_logs.insert(END, LANG["extra_is_empty_info"].format(path_dest, del_count), "green")
