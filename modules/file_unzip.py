@@ -16,6 +16,7 @@ def get_resource_path(relative_path: str) -> str:
     :return: 绝对路径
     """
     try:
+        # noinspection PyUnresolvedReferences,PyProtectedMember
         base_path = sys._MEIPASS
     except AttributeError:
         base_path = os.path.abspath(".")

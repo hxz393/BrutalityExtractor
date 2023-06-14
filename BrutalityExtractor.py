@@ -55,6 +55,7 @@ def set_priority(pid=None, priority=psutil.REALTIME_PRIORITY_CLASS):
     p.nice(priority)
 
 
+# noinspection PyUnusedLocal,PyArgumentList,DuplicatedCode
 class ToolTip:
     def __init__(self, widget, text, switch):
         self.widget = widget
@@ -99,6 +100,7 @@ class ToolTip:
             self.bind_tooltip()
 
 
+# noinspection PyArgumentList
 class CollapsingFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -168,14 +170,16 @@ class CollapsingFrame(ttk.Frame):
         self.update_idletasks()
         plug_height = 30 if mini_skin_config else 62
         new_height = sum(c.winfo_height() for c in self.grid_slaves()) + plug_height
+        # noinspection PyUnresolvedReferences
         self.master.geometry(f"{self.master.winfo_width()}x{new_height}")
 
 
+# noinspection PyArgumentList,PyTypeChecker,DuplicatedCode
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
-    版本：1.0.1\n
-    更新时间：2023.06.12\n
+    版本：1.0.2\n
+    更新时间：2023.06.14\n
     打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
     UI 文档：https://ttkbootstrap.readthedocs.io/en/latest/zh/\n
@@ -186,7 +190,7 @@ class BrutalityExtractor:
         # 主窗口配置
         self.root = ttk.Window()
         self.style = ttk.Style(theme=theme_config)
-        self.root.title("BrutalityExtractor v1.0.1")
+        self.root.title("BrutalityExtractor v1.0.2")
         self.root.attributes("-alpha", alpha_config)
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
@@ -223,6 +227,7 @@ class BrutalityExtractor:
                 entry.configure(foreground='black')
 
         # 日志等级选择菜单样式更改
+        # noinspection PyUnusedLocal
         def update_logl_style(*args):
             selected_option = self.var_logl.get()
             if selected_option == 'ERROR':
@@ -235,6 +240,7 @@ class BrutalityExtractor:
                 self.menubutton_logl.config(bootstyle="dark-outline")
 
         # 写入配置
+        # noinspection PyUnusedLocal
         def on_option_change(*args, config_key='', config_var=ttk.StringVar()):
             CP.set('main', config_key, str(config_var.get()))
             write_config(r'config/config.ini', CP, logger)
@@ -282,6 +288,7 @@ class BrutalityExtractor:
             else:
                 var = ttk.StringVar(value=value)
 
+            # noinspection PyTypeChecker
             var.trace_add("write", partial(on_option_change, config_key=config_key, config_var=var))
 
             return var
