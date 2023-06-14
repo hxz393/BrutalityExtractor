@@ -22,7 +22,7 @@ from modules.file_ops import *
 from modules.math_until import *
 from modules.conf_init import *
 
-logger = configure_logging(console_output=True, log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
+logger = configure_logging(console_output=True, log_file = "logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
 
 
 def thread_it(func, *args, daemon=True, name=None):

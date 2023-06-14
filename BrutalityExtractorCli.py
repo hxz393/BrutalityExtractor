@@ -9,7 +9,7 @@ from modules.file_ops import *
 from modules.math_until import *
 from modules.conf_init import LANG
 
-logger=configure_logging(log_file=False, console_output=True)
+logger=configure_logging(console_output=True)
 
 def main(path_zip: str, password: str, parallel: str):
     """
