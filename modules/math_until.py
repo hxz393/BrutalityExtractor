@@ -43,7 +43,7 @@ def format_time(duration: float, decimal_places: int = 2) -> str:
     if not (isinstance(duration, (float, int))):
         raise TypeError(LANG["format_size_typeerror"])
     if duration < 0:
-        raise ValueError("format_size_valueerror")
+        raise ValueError(LANG["format_size_valueerror"])
 
     for fmt in FORMAT_LIST:
         if duration < UNIT:
