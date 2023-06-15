@@ -28,7 +28,7 @@ def configure_logging(log_file: Optional[str] = None, console_output: bool = Fal
     """
     log_levels = ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"]
     if log_level.upper() not in log_levels:
-        raise ValueError(f"无效的日志等级: {log_level}，必须是 {log_levels} 中的一种")
+        raise ValueError(f"log_level error")
 
     logger = getLogger(__name__)
     logger.setLevel(getattr(logging, log_level.upper()))

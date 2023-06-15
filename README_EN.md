@@ -169,6 +169,8 @@ Settings in the advanced configuration need to be adjusted according to actual c
 
   Set the number of decompression processes to run at the same time. As decompression operations occupy a lot of processor, memory, and hard disk resources, it's recommended not to open other software during operation to ensure smooth decompression.
 
+  The number of processes will not exceed the total number of files to be decompressed.
+
 - **Ignore Warnings**
 
   Turn off system resource detection before decompression.
@@ -315,6 +317,21 @@ No. Please try professional software, such as `everything`, `PowerToys`, and oth
 # Update Log
 
 To avoid too long update logs, only the most recent update log is retained.
+
+## Version 1.0.2 (2023.06.15)
+
+Improvements:
+
+1. Change the log writing format to UTF-8;
+2. When the total number of files to be decompressed is less than the number of processes, set the number of processes to the number of files.
+
+Bug fixes:
+
+1. Fixed the error in the file deletion count;
+2. Fixed the issue of decimal places in file sizes being ignored;
+3. Fixed some omitted text.
+
+
 
 ## Version 1.0.1 (2023.06.12)
 
