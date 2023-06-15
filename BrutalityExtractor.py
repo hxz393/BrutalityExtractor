@@ -765,7 +765,6 @@ class BrutalityExtractor:
     def main(self):
         # 初始化变量
         password = set(read_txt_to_list(self.entry_pass.get(), logger) if os.path.isfile(self.entry_pass.get()) else [self.entry_pass.get()])
-        parallel = min(int(self.var_para.get()), round(cpu_count() / 2) if cpu_count() > 3 else 1)
         path_zip = self.entry_path.get()
         path_dest = self.entry_dest.get()
         no_warnning = self.var_warn.get()
@@ -845,6 +844,7 @@ class BrutalityExtractor:
             file_size_format = format_size(file_size)
             file_in_total_number = len(file_infos)
             self.bottom_run.configure(maximum=file_in_total_number)
+            parallel = min(file_in_total_number, int(self.var_para.get()), round(cpu_count() / 2) if cpu_count() > 3 else 1)
 
             # 磁盘空间低警告
             if disk_free < file_size and not no_warnning:
