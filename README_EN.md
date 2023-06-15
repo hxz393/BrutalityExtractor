@@ -36,6 +36,8 @@ When the processor is less than 2 cores 4 threads, the software will run in sing
 
 For processor above 2 cores 4 threads, for stability considerations, the maximum number of processes that can be set by the software does not exceed half of the processor thread count.
 
+The number of processes will not exceed the total number of files to be decompressed.
+
 You can choose to run multiple instances of the software to effectively ignore this limitation. For any system crashes, data loss, etc. that result from this, please assess the impact yourself.
 
 ### Memory
@@ -168,8 +170,6 @@ Settings in the advanced configuration need to be adjusted according to actual c
 - **Processes**
 
   Set the number of decompression processes to run at the same time. As decompression operations occupy a lot of processor, memory, and hard disk resources, it's recommended not to open other software during operation to ensure smooth decompression.
-
-  The number of processes will not exceed the total number of files to be decompressed.
 
 - **Ignore Warnings**
 

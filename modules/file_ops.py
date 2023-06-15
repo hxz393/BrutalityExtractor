@@ -9,6 +9,7 @@ from collections import defaultdict
 import shutil
 import re
 import os
+import atexit
 from typing import Dict, List, Any
 
 from modules.conf_init import LANG, ZIP_FILE_TYPE_DICT
@@ -189,6 +190,13 @@ def read_json(path: str, logger = getLogger(__name__)):
 
     return lang_dict
 
+def remove_temp_file(path: str):
+    """删除临时文件"""
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+
 
 def create_temp_icon_file(base64_string: str, logger) -> str:
     """
@@ -206,6 +214,7 @@ def create_temp_icon_file(base64_string: str, logger) -> str:
         with open(temp_file.name, 'wb') as icon_file:
             icon_file.write(icon_data)
         path = temp_file.name
+        atexit.register(remove_temp_file, temp_file.name)
         logger.debug(LANG["create_temp_icon_file_debug"].format(temp_file.name))
     except Exception as e:
         logger.error(LANG["create_temp_icon_file_error"].format(e))
