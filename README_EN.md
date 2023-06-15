@@ -67,7 +67,7 @@ A general table of hard disk specifications and corresponding process numbers is
 Software download methods:
 
 - Method 1: Go to the [release](https://github.com/hxz393/BrutalityExtractor/releases) page to download the latest executable file, named `BrutalityExtractor.exe` or `BrutalityExtractorCli.exe`. It can be used directly after download.
-- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor v1.0.1.zip) download.
+- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor%20v1.0.2.zip) download.
 
 
 
