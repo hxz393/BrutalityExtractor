@@ -684,35 +684,30 @@ class BrutalityExtractor:
         session = requests.Session()
         session.trust_env = False
         urllib3.disable_warnings()
+        message_title = LANG["msg_info_title"]
+        message = ""
 
         try:
             response = session.get(url, verify=False)
             if response.status_code == 200:
                 latest_version = response.text.strip()
                 if latest_version != current_version:
-                    self.root.after(10, lambda: Messagebox.show_info(
-                        title=LANG["msg_info_title"],
-                        message=LANG["check_update_info_1"].format(current_version, latest_version)
-                    ))
-                elif latest_version == current_version:
-                    self.root.after(10, lambda: Messagebox.show_info(
-                        title=LANG["msg_info_title"],
-                        message=LANG["check_update_info_2"].format(current_version, latest_version)
-                    ))
+                    message = LANG["check_update_info_1"].format(current_version, latest_version)
+                else:
+                    message = LANG["check_update_info_2"].format(current_version, latest_version)
             else:
-                self.root.after(10, lambda: Messagebox.show_info(
-                    title=LANG['msg_info_title'],
-                    message=LANG["check_update_info_3"]
-                ))
+                message = LANG["check_update_info_3"]
         except Exception as e:
             logger.error(LANG["check_update_error_log"].format(url, e))
-            self.root.after(10, lambda: Messagebox.show_error(
-                title=LANG["msg_error_title"],
-                message=LANG["check_update_error_msg"]
-            ))
+            message_title = LANG["msg_error_title"]
+            message = LANG["check_update_error_msg"]
 
         finally:
             self.bottom_update['stat'] = 'normal'
+            self.root.after(10, lambda: Messagebox.show_info(
+                title=message_title,
+                message=message
+            ))
 
     # 附加功能函数
     def extra(self):
