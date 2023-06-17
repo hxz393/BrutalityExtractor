@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from modules.file_ops import get_target_size
-from modules.conf_init import LANG
+from modules import LANG
 
 
 def get_resource_path(relative_path: str) -> str:

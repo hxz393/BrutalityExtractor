@@ -7,6 +7,7 @@ from multiprocessing import Pool, freeze_support, cpu_count
 from threading import Thread
 import psutil
 from functools import partial
+import cProfile
 
 import ttkbootstrap as ttk
 import tkinter as tk
@@ -16,14 +17,15 @@ from ttkbootstrap.style import Bootstyle
 from tkinter import filedialog
 from tkfontawesome import icon_to_image
 
-from modules.log_conf import configure_logging
+from modules.module_use import *
 from modules.file_unzip import unzip
 from modules.file_ops import *
 from modules.math_until import *
-from modules.conf_init import *
 
-logger = configure_logging(console_output=True, log_file = "logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
+from modules import *
 
+logger = logging_config(console_output=True, log_file ="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
+profiler = cProfile.Profile()
 
 def thread_it(func, *args, daemon=True, name=None):
     """
@@ -204,10 +206,6 @@ class BrutalityExtractor:
         # self.default_font['size'] = 9
         # print(type(self.style.theme.colors.primary))
 
-        # 定义回调
-        self.digit_func = self.root.register(is_numeric)
-        self.alpha_func = self.root.register(is_alpha)
-        self.empty_func = self.root.register(is_not_empty)
 
         # 选择对话框
         def select_file(entry, var):
@@ -243,7 +241,7 @@ class BrutalityExtractor:
         # noinspection PyUnusedLocal
         def on_option_change(*args, config_key='', config_var=ttk.StringVar()):
             CP.set('main', config_key, str(config_var.get()))
-            write_config(r'config/config.ini', CP, logger)
+            config_write(CONFIG_PATH, CP)
 
         # 修改主题
         def change_theme(theme):
@@ -311,7 +309,7 @@ class BrutalityExtractor:
         self.label_path = ttk.Label(self.basic_area, text=LANG["label_path_text"])
         self.label_path.grid(row=1, column=0, sticky=E, padx=(15, 0), pady=(15, 0))
 
-        self.entry_path = ttk.Entry(self.basic_area, bootstyle="dark", textvariable=self.var_path, validate="focus", validatecommand=(self.empty_func, '%P'))
+        self.entry_path = ttk.Entry(self.basic_area, bootstyle="dark", textvariable=self.var_path, validate="focus")
         self.entry_path.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
         create_right_click_menu(self.entry_path)
 
@@ -343,7 +341,7 @@ class BrutalityExtractor:
         self.label_pass = ttk.Label(self.basic_area, text=LANG["label_pass_text"])
         self.label_pass.grid(row=3, column=0, sticky=E, padx=(15, 0), pady=(15, 15))
 
-        self.entry_pass = ttk.Entry(self.basic_area, textvariable=self.var_pass, validate="focus", validatecommand=('', '%P'))
+        self.entry_pass = ttk.Entry(self.basic_area, textvariable=self.var_pass, validate="focus")
         self.entry_pass.grid(row=3, column=1, sticky=W + E, padx=(0, 0), pady=(15, 15))
         create_right_click_menu(self.entry_pass)
 
@@ -587,7 +585,7 @@ class BrutalityExtractor:
         self.label_xcld = ttk.Label(self.extra_area_fr3, text=LANG["label_xcld_text"])
         self.label_xcld.grid(row=1, column=0, sticky=E, padx=(0, 0), pady=(0, 0))
 
-        self.entry_xcld = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xcld, validate="focus", validatecommand=('', '%P'))
+        self.entry_xcld = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xcld, validate="focus")
         self.entry_xcld.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(0, 0))
         create_right_click_menu(self.entry_xcld)
 
@@ -603,7 +601,7 @@ class BrutalityExtractor:
         self.label_xclf = ttk.Label(self.extra_area_fr3, text=LANG["label_xclf_text"])
         self.label_xclf.grid(row=2, column=0, sticky=E, padx=(0, 0), pady=(15, 0))
 
-        self.entry_xclf = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xclf, validate="focus", validatecommand=('', '%P'))
+        self.entry_xclf = ttk.Entry(self.extra_area_fr3, textvariable=self.var_xclf, validate="focus")
         self.entry_xclf.grid(row=2, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
         create_right_click_menu(self.entry_xclf)
 
@@ -711,6 +709,8 @@ class BrutalityExtractor:
 
     # 附加功能函数
     def extra(self):
+        # profiler.enable()
+
         path_dest = self.entry_dest.get()
         xcld = set(read_txt_to_list(self.entry_xcld.get(), logger) if os.path.isfile(self.entry_xcld.get()) else [self.entry_xcld.get()])
         xclf = set(read_txt_to_list(self.entry_xclf.get(), logger) if os.path.isfile(self.entry_xclf.get()) else [self.entry_xclf.get()])
@@ -718,7 +718,6 @@ class BrutalityExtractor:
         is_empty = self.var_mpty.get()
 
         logger.info(LANG["extra_info_start"].format("#" * 6, "#" * 6))
-
         if not path_dest:
             logger.warning(LANG["extra_path_dest_warning"].format("#" * 6, "#" * 6))
             self.root.after(10, lambda: Messagebox.show_warning(
@@ -755,6 +754,9 @@ class BrutalityExtractor:
             self.text_logs.insert(END, LANG["extra_is_empty_info"].format(path_dest, del_count), "green")
 
         logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))
+
+        # profiler.disable()
+        # profiler.print_stats()
 
     # 主函数
     def main(self):
@@ -897,13 +899,11 @@ class BrutalityExtractor:
 
             # unzip(file_infos[0], password, logger)
 
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            elapsed_time_format = format_time(end_time - start_time)
-            your_speed = calculate_speed(file_size, elapsed_time)
+            elapsed_time = time.time() - start_time
+            your_speed = calculate_transfer_speed(file_size, elapsed_time)
 
-            logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed))
-            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"], message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed)))
+            logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed))
+            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"], message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed)))
 
         # 故障处理
         except Exception as e:
@@ -924,8 +924,9 @@ class BrutalityExtractor:
 if __name__ == '__main__':
     freeze_support()
     set_priority()
-    if not CP:
-        write_config(r'config/config.ini', {'main': {}}, logger)
-        CP = read_config(r'config/config.ini', logger)
     app = BrutalityExtractor()
     app.run()
+
+#todo 替换函数，修复性能问题
+#todo 修改日志输出内容
+#todo 修改配置获取方式

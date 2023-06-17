@@ -12,7 +12,7 @@ import os
 import atexit
 from typing import Dict, List, Any
 
-from modules.conf_init import LANG, ZIP_FILE_TYPE_DICT
+from modules import LANG, ZIP_FILE_TYPE_DICT
 
 
 def get_file_paths(target: str, logger) -> list[str]:
@@ -23,15 +23,17 @@ def get_file_paths(target: str, logger) -> list[str]:
     :param logger: 日志记录器
     :return: 文件路径列表
     """
-    path = Path(target)
-    file_paths = []
+    if not os.path.exists(target) or not os.path.isdir(target):
+        logger.warning(LANG["no_paths_warning"].format(target))
+        return []
 
+    file_paths = []
     try:
-        if not path.exists() or not path.is_dir():
-            logger.warning(LANG["no_paths_warning"].format(target))
-        else:
-            file_paths = [str(file_path) for file_path in path.rglob('*') if file_path.is_file()]
-            logger.debug(LANG["get_file_paths_debug"].format(target, file_paths))
+        for root, dirs, files in os.walk(target):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file_paths.append(file_path)
+        logger.debug(LANG["get_file_paths_debug"].format(target, file_paths))
     except Exception as e:
         logger.error(LANG["get_file_paths_error"].format(target, e))
 
@@ -46,18 +48,17 @@ def get_folder_paths(target: str, logger) -> list[str]:
     :param logger: 日志记录器
     :return: 文件夹路径列表
     """
-    path = Path(target)
-    folder_paths = []
+    if not os.path.exists(target) or not os.path.isdir(target):
+        logger.warning(LANG["no_paths_warning"].format(target))
+        return []
 
+    folder_paths = []
     try:
-        if not path.exists() or not path.is_dir():
-            logger.warning(LANG["no_paths_warning"].format(target))
-        else:
-            for entry in path.iterdir():
-                if entry.is_dir():
-                    folder_paths.append(str(entry))
-                    folder_paths.extend(get_folder_paths(str(entry),logger))
-            logger.debug(LANG["get_folder_paths_debug"].format(target, folder_paths))
+        for root, dirs, files in os.walk(target):
+            for dir in dirs:
+                folder_path = os.path.join(root, dir)
+                folder_paths.append(folder_path)
+        logger.debug(LANG["get_folder_paths_debug"].format(target, folder_paths))
     except Exception as e:
         logger.error(LANG["get_folder_paths_error"].format(target, e))
 

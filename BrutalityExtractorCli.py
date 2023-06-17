@@ -3,13 +3,13 @@ import os.path
 import argparse
 from multiprocessing import Pool, freeze_support
 
-from modules.log_conf import configure_logging
+from modules.module_use import logging_config
 from modules.file_unzip import unzip
 from modules.file_ops import *
 from modules.math_until import *
-from modules.conf_init import LANG
+from modules import LANG
 
-logger=configure_logging(console_output=True)
+logger=logging_config(console_output=True)
 
 def main(path_zip: str, password: str, parallel: str):
     """
@@ -61,15 +61,13 @@ def main(path_zip: str, password: str, parallel: str):
     thread_pool.close()
     thread_pool.join()
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    elapsed_time_format = format_time(elapsed_time)
-    your_speed = calculate_speed(file_size, elapsed_time)
+    elapsed_time = time.time() - start_time
+    your_speed = calculate_transfer_speed(file_size, elapsed_time)
     file_in_total_number = sum(len(i['file_list']) for i in file_infos)
     failed_counts = sum(1 for i in file_infos for p in i['file_list'] if os.path.exists(p))
     finished_counts = file_in_total_number - failed_counts
 
-    logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time_format, your_speed))
+    logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed))
     return 0
 
 
