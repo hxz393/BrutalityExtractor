@@ -3,13 +3,15 @@ import os.path
 import argparse
 from multiprocessing import Pool, freeze_support
 
+from math_utils import format_size
 from modules.module_use import logging_config
-from modules.file_unzip import unzip
+from main_func.file_unzip import file_unzip
 from modules.file_ops import *
-from modules.math_until import *
+from math_utils.calculate_transfer_speed import *
 from modules import LANG
 
-logger=logging_config(console_output=True)
+logging_config(console_output=True)
+logger = logging.getLogger(__name__)
 
 def main(path_zip: str, password: str, parallel: str):
     """
@@ -29,7 +31,7 @@ def main(path_zip: str, password: str, parallel: str):
     logger.info(LANG["main_info_start"].format("#" * 6, "#" * 6))
     start_time = time.time()
 
-    file_paths = get_file_paths(path_zip, logger)
+    file_paths = get_file_paths(path_zip)
     if not file_paths:
         logger.warning(LANG["main_no_file_warning"].format("#" * 6, path_zip, "#" * 6))
         return 1
@@ -43,25 +45,25 @@ def main(path_zip: str, password: str, parallel: str):
         logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
         return 1
 
-    file_size = sum(get_target_size(p, logger) for i in file_infos for p in i['file_list'])
+    file_size = sum(get_target_size(p) for i in file_infos for p in i['file_list'])
     file_size_format = format_size(file_size)
-    password_list = list(set(read_txt_to_list(password, logger) if os.path.isfile(password) else [password]))
+    password_list = list(set(read_file_to_list(password) if os.path.isfile(password) else [password]))
     thread_pool = Pool(processes=parallel)
 
     def print_result(result):
         return_code = result['code']
         if return_code == 2:
-            remove_target(result['file_info']['target_path'], logger) if os.path.exists(result['file_info']['target_path']) else None
+            remove_target(result['file_info']['target_path']) if os.path.exists(result['file_info']['target_path']) else None
         elif return_code == 0:
-            [remove_target(file_del, logger) for file_del in result['file_info']['file_list']]
+            [remove_target(file_del) for file_del in result['file_info']['file_list']]
 
     for file_info in file_infos:
-        thread_pool.apply_async(unzip, args=(file_info, password_list, logger), callback=print_result)
+        thread_pool.apply_async(file_unzip, args=(file_info, password_list, logger), callback=print_result)
 
     thread_pool.close()
     thread_pool.join()
 
-    elapsed_time = time.time() - start_time
+    elapsed_time = round(time.time() - start_time, 2)
     your_speed = calculate_transfer_speed(file_size, elapsed_time)
     file_in_total_number = sum(len(i['file_list']) for i in file_infos)
     failed_counts = sum(1 for i in file_infos for p in i['file_list'] if os.path.exists(p))

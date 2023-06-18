@@ -3,11 +3,13 @@ import time
 import os.path
 import requests
 import urllib3
+import logging
 from multiprocessing import Pool, freeze_support, cpu_count
 from threading import Thread
 import psutil
 from functools import partial
-import cProfile
+import configparser
+from pathlib import Path
 
 import ttkbootstrap as ttk
 import tkinter as tk
@@ -17,15 +19,9 @@ from ttkbootstrap.style import Bootstyle
 from tkinter import filedialog
 from tkfontawesome import icon_to_image
 
-from modules.module_use import *
-from modules.file_unzip import unzip
-from modules.file_ops import *
-from modules.math_until import *
-
 from modules import *
 
-logger = logging_config(console_output=True, log_file ="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
-profiler = cProfile.Profile()
+
 
 def thread_it(func, *args, daemon=True, name=None):
     """
@@ -197,7 +193,7 @@ class BrutalityExtractor:
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
         self.root.minsize(550, 1)
-        self.root.iconbitmap(create_temp_icon_file(MAIN_ICO, logger))
+        self.root.iconbitmap(convert_base64_to_ico(MAIN_ICO))
         # self.root.grid_columnconfigure(0, weight=1)
         # self.root.grid_rowconfigure(10, weight=1)
         # self.root.geometry('550x600')
@@ -712,8 +708,8 @@ class BrutalityExtractor:
         # profiler.enable()
 
         path_dest = self.entry_dest.get()
-        xcld = set(read_txt_to_list(self.entry_xcld.get(), logger) if os.path.isfile(self.entry_xcld.get()) else [self.entry_xcld.get()])
-        xclf = set(read_txt_to_list(self.entry_xclf.get(), logger) if os.path.isfile(self.entry_xclf.get()) else [self.entry_xclf.get()])
+        xcld = set(read_file_to_list(self.entry_xcld.get()) if os.path.isfile(self.entry_xcld.get()) else [self.entry_xcld.get()])
+        xclf = set(read_file_to_list(self.entry_xclf.get()) if os.path.isfile(self.entry_xclf.get()) else [self.entry_xclf.get()])
         is_redundant = self.var_rddd.get()
         is_empty = self.var_mpty.get()
 
@@ -725,32 +721,32 @@ class BrutalityExtractor:
                 message=LANG["extra_path_dest_warning_msg"]))
             return
 
-        if not get_folder_paths(path_dest, logger) and not get_file_paths(path_dest, logger):
+        if not get_folder_paths(path_dest) and not get_file_paths(path_dest):
             self.text_logs.insert(END, LANG["extra_no_action"].format(path_dest), "green")
             return
 
         if xcld != {''}:
-            paths = get_folder_paths(path_dest, logger)
-            remove_matched(paths, logger, xcld)
-            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
+            paths = get_folder_paths(path_dest)
+            remove_target_matched(paths, xcld)
+            del_count = len(paths) - len(get_folder_paths(path_dest))
             self.text_logs.insert(END, LANG["extra_xcld_info"].format(path_dest, del_count), "green")
 
         if xclf != {''}:
-            files = get_file_paths(path_dest, logger)
-            remove_matched(files, logger, xclf)
-            del_count = len(files) - len(get_file_paths(path_dest, logger))
+            files = get_file_paths(path_dest)
+            remove_target_matched(files, xclf)
+            del_count = len(files) - len(get_file_paths(path_dest))
             self.text_logs.insert(END, LANG["extra_xclf_info"].format(path_dest, del_count), "green")
 
         if is_redundant:
-            paths = get_folder_paths(path_dest, logger)
-            [remove_redundant(i, logger) for i in get_subdirectories(path_dest, logger)]
-            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
+            paths = get_folder_paths(path_dest)
+            remove_redundant_dirs(path_dest)
+            del_count = len(paths) - len(get_folder_paths(path_dest))
             self.text_logs.insert(END, LANG["extra_is_redundant_info"].format(path_dest, del_count), "green")
 
         if is_empty:
-            paths = get_folder_paths(path_dest, logger)
-            remove_empty_dirs(path_dest, logger)
-            del_count = len(paths) - len(get_folder_paths(path_dest, logger))
+            paths = get_folder_paths(path_dest)
+            remove_empty_dirs(path_dest)
+            del_count = len(paths) - len(get_folder_paths(path_dest))
             self.text_logs.insert(END, LANG["extra_is_empty_info"].format(path_dest, del_count), "green")
 
         logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))
@@ -761,7 +757,7 @@ class BrutalityExtractor:
     # 主函数
     def main(self):
         # 初始化变量
-        password = set(read_txt_to_list(self.entry_pass.get(), logger) if os.path.isfile(self.entry_pass.get()) else [self.entry_pass.get()])
+        password = set(read_file_to_list(self.entry_pass.get()) if os.path.isfile(self.entry_pass.get()) else [self.entry_pass.get()])
         path_zip = self.entry_path.get()
         path_dest = self.entry_dest.get()
         no_warnning = self.var_warn.get()
@@ -800,7 +796,7 @@ class BrutalityExtractor:
                 return
 
             # 获取目标目录下的所有文件路径列表，检查是否有文件
-            file_paths = get_file_paths(path_zip, logger)
+            file_paths = get_file_paths(path_zip)
             if not file_paths:
                 logger.warning(LANG["main_no_file_warning"].format("#" * 6, path_zip, "#" * 6))
                 self.root.after(10, lambda: Messagebox.show_warning(
@@ -809,11 +805,11 @@ class BrutalityExtractor:
                 return
 
             # 对文件路径列表按解压目标进行初步分组
-            path_groups = group_file_paths(file_paths, logger)
+            path_groups = group_file_paths(file_paths)
 
             # 生成全文件分组列表，替换掉目标目录
             disk_free = psutil.disk_usage(Path(path_zip).anchor).free
-            full_infos = group_list_by_lens(path_groups, logger)
+            full_infos = group_list_by_lens(path_groups)
             if path_dest:
                 path_dest = Path(path_dest)
                 try:
@@ -828,7 +824,7 @@ class BrutalityExtractor:
                 disk_free = psutil.disk_usage(Path(path_dest).anchor).free
 
             # 筛选出压缩文件分组列表，检查是否有压缩文件
-            file_infos = group_files_main(full_infos, logger)
+            file_infos = group_files_main(full_infos)
             if not file_infos:
                 logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
                 self.root.after(10, lambda: Messagebox.show_warning(
@@ -837,7 +833,7 @@ class BrutalityExtractor:
                 return
 
             # 计算变量
-            file_size = sum(get_target_size(p, logger) for i in file_infos for p in i['file_list'])
+            file_size = sum(get_target_size(p) for i in file_infos for p in i['file_list'])
             file_size_format = format_size(file_size)
             file_in_total_number = len(file_infos)
             self.bottom_run.configure(maximum=file_in_total_number)
@@ -880,11 +876,11 @@ class BrutalityExtractor:
                 nonlocal finished_counts
 
                 if return_code == 2:
-                    remove_target(result['file_info']['target_path'], logger)
+                    remove_target(result['file_info']['target_path'])
                     failed_counts += 1
                     self.text_logs.insert(END, result['std'] + '\n', "red")
                 elif return_code == 0:
-                    [remove_target(file_del, logger) for file_del in result['file_info']['file_list']] if is_delete == 1 else None
+                    [remove_target(file_del) for file_del in result['file_info']['file_list']] if is_delete == 1 else None
                     finished_counts += 1
                     self.text_logs.insert(END, result['std'] + '\n', "green")
 
@@ -893,13 +889,13 @@ class BrutalityExtractor:
             # 多进程解压
             thread_pool = Pool(processes=parallel)
             for file_info in file_infos:
-                thread_pool.apply_async(unzip, args=(file_info, password, logger), callback=post_action)
+                thread_pool.apply_async(file_unzip, args=(file_info, password, logger), callback=post_action)
             thread_pool.close()
             thread_pool.join()
 
             # unzip(file_infos[0], password, logger)
 
-            elapsed_time = time.time() - start_time
+            elapsed_time = round(time.time() - start_time, 2)
             your_speed = calculate_transfer_speed(file_size, elapsed_time)
 
             logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed))
@@ -924,9 +920,61 @@ class BrutalityExtractor:
 if __name__ == '__main__':
     freeze_support()
     set_priority()
+
+    # 初始化配置
+    CP = configparser.ConfigParser()
+
+    # 如果配置文件存在，读取配置文件
+    if Path(CONFIG_PATH).exists():
+        CP = config_read(CONFIG_PATH)
+
+    # 先更新 "DEFAULT" section，不论是否已经存在
+    CP.read_dict(DEFAULT_CONFIG)
+
+    # 检查是否存在 "main" section，如果不存在则添加
+    if not CP.has_section("main"):
+        CP.add_section("main")
+
+    # 最后写入配置文件
+    with open(CONFIG_PATH, 'w', encoding="utf-8") as configfile:
+        CP.write(configfile)
+
+    # 使用包装函数获取配置值
+    path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)
+    path_dest_config = config_get(CP, 'main', 'path_dest', CP.get)
+    password_config = config_get(CP, 'main', 'password', CP.get)
+    parallel_config = config_get(CP, 'main', 'parallel', CP.getint)
+    no_warnning_config = config_get(CP, 'main', 'no_warnning', CP.getint)
+    is_delete_config = config_get(CP, 'main', 'is_delete', CP.getint)
+    log_level_config = config_get(CP, 'main', 'log_level', CP.get)
+    log_size_config = config_get(CP, 'main', 'log_size', CP.getint)
+    log_count_config = config_get(CP, 'main', 'log_count', CP.getint)
+    is_extra_config = config_get(CP, 'main', 'is_extra', CP.getint)
+    is_redundant_config = config_get(CP, 'main', 'is_redundant', CP.getint)
+    is_empty_config = config_get(CP, 'main', 'is_empty', CP.getint)
+    xcl_dir_config = config_get(CP, 'main', 'xcl_dir', CP.get)
+    xcl_file_config = config_get(CP, 'main', 'xcl_file', CP.get)
+    no_tooltip_config = config_get(CP, 'main', 'no_tooltip', CP.getint)
+    mini_skin_config = config_get(CP, 'main', 'mini_skin', CP.getint)
+    theme_config = config_get(CP, 'main', 'theme', CP.get)
+    lang_config = config_get(CP, 'main', 'lang', CP.get)
+    alpha_config = config_get(CP, 'main', 'alpha', CP.getfloat)
+
+    # 校准配置
+    theme_config = theme_config if theme_config in THEME_LIST else 'yeti'
+    log_level_config = log_level_config if log_level_config in LOG_LEVEL_LIST else 'INFO'
+    lang_config = lang_config if lang_config in LANG_LIST else 'ENG'
+
+    # 图标
+    FONT_SIZE = 10 if mini_skin_config else 16
+    ICO_SIZE = 16 if mini_skin_config else 48
+
+    # 初始化语言配置
+    LANG = LANG_DICT[lang_config]
+
+    # 初始化日志记录
+    logging_config(console_output=True, log_file="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
+    logger = logging.getLogger(__name__)
+
     app = BrutalityExtractor()
     app.run()
-
-#todo 替换函数，修复性能问题
-#todo 修改日志输出内容
-#todo 修改配置获取方式

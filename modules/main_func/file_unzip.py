@@ -1,38 +1,27 @@
 import re
 import subprocess
-import sys
 import os
 from pathlib import Path
+import logging
 
-from modules.file_ops import get_target_size
-from modules import LANG
+from file_ops import get_target_size, get_resource_path
 
-
-def get_resource_path(relative_path: str) -> str:
-    """
-    获取资源的绝对路径，针对PyInstaller打包的可执行文件
-
-    :param relative_path: 相对路径
-    :return: 绝对路径
-    """
-    try:
-        # noinspection PyUnresolvedReferences,PyProtectedMember
-        base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
+logger = logging.getLogger(__name__)
 BIN_7Z_PATH = get_resource_path('bin/7z.exe')
 
 
-def unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
+
+from others.lang_dict import LANG_DICT
+LANG = LANG_DICT['CHS']
+
+
+
+def file_unzip(file_info: dict, password_set: set) -> dict[str, str | int]:
     """
     解压文件函数
 
     :param file_info: 文件信息字典，格式为：{'target_path': '目标路径', 'main_file_path': '主文件路径', 'grouped_file_list': ['文件路径1', '文件路径2', '文件路径3'...]}
     :param password_set: 密码集合，格式为：{'pass1', 'pass2'...}
-    :param logger: 日志记录器
 
     :return: 返回解压结果字典，格式为：{'code': 状态码, 'std': 结果展示文本, 'file_info': 原始file_info字典}
     """
@@ -63,7 +52,7 @@ def unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
 
         if result.returncode == 0:
             info_size = int(re.search(r"Size:\s+(\d+)", result.stdout).group(1)) if re.search(r"Size:\s+(\d+)", result.stdout) else 0
-            size_target = sum(get_target_size(str(f), logger) for f in Path(target_path).rglob('*') if f.is_file())
+            size_target = sum(get_target_size(str(f)) for f in Path(target_path).rglob('*') if f.is_file())
             if info_size == size_target:
                 result_data['code'] = 0
                 result_data['std'] = LANG["unzip_success"].format(main_file)

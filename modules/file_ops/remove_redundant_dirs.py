@@ -1,0 +1,55 @@
+import os
+import uuid
+import logging
+from typing import List, Union, Optional
+
+logger = logging.getLogger(__name__)
+
+def remove_redundant_dirs(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
+    """
+    移除冗余目录结构。
+
+    如果一个目录只有一个子目录，且该子目录的名称与父目录名称相同，
+    且父目录没有其他文件，则删除子目录，并将其内容移至父目录。
+
+    :param target_path: 需要进行处理的目录路径。
+    :type target_path: Union[str, os.PathLike]
+    :return: 成功时返回一个列表，包含所有被移除的子目录的路径。如果遇到错误则返回 None。
+    :rtype: Optional[List[str]]
+    """
+    removed_dirs = []
+
+    try:
+        if not os.path.exists(target_path):
+            logger.error(f"The path '{target_path}' does not exist.")
+            return None
+
+        if not os.path.isdir(target_path):
+            logger.error(f"'{target_path}' is not a valid directory.")
+            return None
+
+        for subdir in os.scandir(target_path):
+            if subdir.is_dir():
+                subdir_path = subdir.path
+                sub_subdirs = [entry for entry in os.scandir(subdir_path) if entry.is_dir()]
+
+                if len(sub_subdirs) == 1 and sub_subdirs[0].name == os.path.basename(subdir_path):
+                    sub_subdir_path = sub_subdirs[0].path
+                    parent_files = [entry for entry in os.scandir(subdir_path) if entry.is_file()]
+
+                    if not parent_files:
+                        temp_dir = os.path.join(subdir_path, f"{os.path.basename(sub_subdir_path)}_{uuid.uuid4()}")
+                        os.rename(sub_subdir_path, temp_dir)
+
+                        for item in os.scandir(temp_dir):
+                            os.rename(item.path, os.path.join(subdir_path, item.name))
+
+                        if not any(os.scandir(temp_dir)):
+                            os.rmdir(temp_dir)
+
+                        removed_dirs.append(os.path.normpath(sub_subdir_path))
+    except Exception as e:
+        logger.error(f"An error occurred while removing redundant directories: {e}")
+        return None
+
+    return removed_dirs
