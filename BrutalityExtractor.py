@@ -21,6 +21,61 @@ from tkfontawesome import icon_to_image
 
 from modules import *
 
+# 初始化配置
+CP = configparser.ConfigParser()
+
+# 如果配置文件存在，读取配置文件
+if Path(CONFIG_PATH).exists():
+    CP = config_read(CONFIG_PATH)
+
+# 先更新 "DEFAULT" section，不论是否已经存在
+CP.read_dict(DEFAULT_CONFIG)
+
+# 检查是否存在 "main" section，如果不存在则添加
+if not CP.has_section("main"):
+    CP.add_section("main")
+
+# 最后写入配置文件
+with open(CONFIG_PATH, 'w', encoding="utf-8") as configfile:
+    CP.write(configfile)
+
+# 使用包装函数获取配置值
+path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)
+path_dest_config = config_get(CP, 'main', 'path_dest', CP.get)
+password_config = config_get(CP, 'main', 'password', CP.get)
+parallel_config = config_get(CP, 'main', 'parallel', CP.getint)
+no_warnning_config = config_get(CP, 'main', 'no_warnning', CP.getint)
+is_delete_config = config_get(CP, 'main', 'is_delete', CP.getint)
+log_level_config = config_get(CP, 'main', 'log_level', CP.get)
+log_size_config = config_get(CP, 'main', 'log_size', CP.getint)
+log_count_config = config_get(CP, 'main', 'log_count', CP.getint)
+is_extra_config = config_get(CP, 'main', 'is_extra', CP.getint)
+is_redundant_config = config_get(CP, 'main', 'is_redundant', CP.getint)
+is_empty_config = config_get(CP, 'main', 'is_empty', CP.getint)
+xcl_dir_config = config_get(CP, 'main', 'xcl_dir', CP.get)
+xcl_file_config = config_get(CP, 'main', 'xcl_file', CP.get)
+no_tooltip_config = config_get(CP, 'main', 'no_tooltip', CP.getint)
+mini_skin_config = config_get(CP, 'main', 'mini_skin', CP.getint)
+theme_config = config_get(CP, 'main', 'theme', CP.get)
+lang_config = config_get(CP, 'main', 'lang', CP.get)
+alpha_config = config_get(CP, 'main', 'alpha', CP.getfloat)
+
+# 校准配置
+theme_config = theme_config if theme_config in THEME_LIST else 'yeti'
+log_level_config = log_level_config if log_level_config in LOG_LEVEL_LIST else 'INFO'
+lang_config = lang_config if lang_config in LANG_LIST else 'ENG'
+
+# 图标
+FONT_SIZE = 10 if mini_skin_config else 16
+ICO_SIZE = 16 if mini_skin_config else 48
+
+# 初始化语言配置
+LANG = LANG_DICT[lang_config]
+
+# 初始化日志记录
+logging_config(console_output=True, log_file="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
+logger = logging.getLogger(__name__)
+
 
 
 def thread_it(func, *args, daemon=True, name=None):
@@ -176,8 +231,8 @@ class CollapsingFrame(ttk.Frame):
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
-    版本：1.0.2\n
-    更新时间：2023.06.14\n
+    版本：1.1.0\n
+    更新时间：2023.06.20\n
     打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
     UI 文档：https://ttkbootstrap.readthedocs.io/en/latest/zh/\n
@@ -199,7 +254,7 @@ class BrutalityExtractor:
         # self.root.geometry('550x600')
         # self.root.overrideredirect(True)
         # self.default_font = ttk.font.nametofont('TkDefaultFont')
-        # self.default_font['size'] = 9
+        # self.default_font['size'] = 4
         # print(type(self.style.theme.colors.primary))
 
 
@@ -247,6 +302,7 @@ class BrutalityExtractor:
         # 修改语言
         def change_language(lang):
             self.var_lang.set(lang)
+            LANG = LANG_DICT[lang]
             Messagebox.show_info(
                 title=LANG['msg_info_title'],
                 message=LANG['change_language_msg']
@@ -920,61 +976,6 @@ class BrutalityExtractor:
 if __name__ == '__main__':
     freeze_support()
     set_priority()
-
-    # 初始化配置
-    CP = configparser.ConfigParser()
-
-    # 如果配置文件存在，读取配置文件
-    if Path(CONFIG_PATH).exists():
-        CP = config_read(CONFIG_PATH)
-
-    # 先更新 "DEFAULT" section，不论是否已经存在
-    CP.read_dict(DEFAULT_CONFIG)
-
-    # 检查是否存在 "main" section，如果不存在则添加
-    if not CP.has_section("main"):
-        CP.add_section("main")
-
-    # 最后写入配置文件
-    with open(CONFIG_PATH, 'w', encoding="utf-8") as configfile:
-        CP.write(configfile)
-
-    # 使用包装函数获取配置值
-    path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)
-    path_dest_config = config_get(CP, 'main', 'path_dest', CP.get)
-    password_config = config_get(CP, 'main', 'password', CP.get)
-    parallel_config = config_get(CP, 'main', 'parallel', CP.getint)
-    no_warnning_config = config_get(CP, 'main', 'no_warnning', CP.getint)
-    is_delete_config = config_get(CP, 'main', 'is_delete', CP.getint)
-    log_level_config = config_get(CP, 'main', 'log_level', CP.get)
-    log_size_config = config_get(CP, 'main', 'log_size', CP.getint)
-    log_count_config = config_get(CP, 'main', 'log_count', CP.getint)
-    is_extra_config = config_get(CP, 'main', 'is_extra', CP.getint)
-    is_redundant_config = config_get(CP, 'main', 'is_redundant', CP.getint)
-    is_empty_config = config_get(CP, 'main', 'is_empty', CP.getint)
-    xcl_dir_config = config_get(CP, 'main', 'xcl_dir', CP.get)
-    xcl_file_config = config_get(CP, 'main', 'xcl_file', CP.get)
-    no_tooltip_config = config_get(CP, 'main', 'no_tooltip', CP.getint)
-    mini_skin_config = config_get(CP, 'main', 'mini_skin', CP.getint)
-    theme_config = config_get(CP, 'main', 'theme', CP.get)
-    lang_config = config_get(CP, 'main', 'lang', CP.get)
-    alpha_config = config_get(CP, 'main', 'alpha', CP.getfloat)
-
-    # 校准配置
-    theme_config = theme_config if theme_config in THEME_LIST else 'yeti'
-    log_level_config = log_level_config if log_level_config in LOG_LEVEL_LIST else 'INFO'
-    lang_config = lang_config if lang_config in LANG_LIST else 'ENG'
-
-    # 图标
-    FONT_SIZE = 10 if mini_skin_config else 16
-    ICO_SIZE = 16 if mini_skin_config else 48
-
-    # 初始化语言配置
-    LANG = LANG_DICT[lang_config]
-
-    # 初始化日志记录
-    logging_config(console_output=True, log_file="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
-    logger = logging.getLogger(__name__)
 
     app = BrutalityExtractor()
     app.run()

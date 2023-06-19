@@ -2,32 +2,31 @@ import re
 import subprocess
 import os
 from pathlib import Path
-import logging
 
 from file_ops import get_target_size, get_resource_path
 
-logger = logging.getLogger(__name__)
 BIN_7Z_PATH = get_resource_path('bin/7z.exe')
 
 
 
-from others.lang_dict import LANG_DICT
+from configs.lang_dict import LANG_DICT
 LANG = LANG_DICT['CHS']
 
 
 
-def file_unzip(file_info: dict, password_set: set) -> dict[str, str | int]:
+def file_unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
     """
     解压文件函数
 
     :param file_info: 文件信息字典，格式为：{'target_path': '目标路径', 'main_file_path': '主文件路径', 'grouped_file_list': ['文件路径1', '文件路径2', '文件路径3'...]}
     :param password_set: 密码集合，格式为：{'pass1', 'pass2'...}
+    :param logger: 日志记录器
 
-    :return: 返回解压结果字典，格式为：{'code': 状态码, 'std': 结果展示文本, 'file_info': 原始file_info字典}
+    :return: 返回解压结果字典，格式为：{'code': 状态码, 'file_info': 原始file_info字典}
     """
     target_path = file_info['target_path']
     main_file = file_info['main_file']
-    result_data = {'code': 2, 'std': "", 'file_info': file_info}
+    result_data = {'code': 2, 'file_info': file_info}
 
     if not password_set:
         password_set = {''}

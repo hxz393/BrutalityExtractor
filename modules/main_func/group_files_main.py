@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 import logging
 
 from modules import get_file_type, rename_target_if_exist
-from others.settings import ZIP_FILE_TYPE_DICT
+from configs.settings import ZIP_FILE_TYPE_DICT
 
 logger = logging.getLogger(__name__)
 

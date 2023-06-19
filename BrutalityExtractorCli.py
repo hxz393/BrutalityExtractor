@@ -1,18 +1,17 @@
 import time
 import os.path
 import argparse
+import logging
+import locale
 from multiprocessing import Pool, freeze_support
 
-from math_utils import format_size
-from modules.module_use import logging_config
-from main_func.file_unzip import file_unzip
-from modules.file_ops import *
-from math_utils.calculate_transfer_speed import *
-from modules import LANG
+from modules import *
 
 logging_config(console_output=True)
 logger = logging.getLogger(__name__)
 
+
+# noinspection DuplicatedCode
 def main(path_zip: str, password: str, parallel: str):
     """
     Command-line mode\n
@@ -36,11 +35,11 @@ def main(path_zip: str, password: str, parallel: str):
         logger.warning(LANG["main_no_file_warning"].format("#" * 6, path_zip, "#" * 6))
         return 1
 
-    path_groups = group_file_paths(file_paths, logger)
+    path_groups = group_file_paths(file_paths)
 
-    full_infos = group_list_by_lens(path_groups, logger)
+    full_infos = group_list_by_lens(path_groups)
 
-    file_infos = group_files_main(full_infos, logger)
+    file_infos = group_files_main(full_infos)
     if not file_infos:
         logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
         return 1
@@ -74,8 +73,10 @@ def main(path_zip: str, password: str, parallel: str):
 
 
 if __name__ == '__main__':
+    LANG = LANG_DICT['CHS'] if locale.getdefaultlocale()[0] == 'zh_CN' else LANG_DICT['ENG']
     freeze_support()
-    # main(r'B:\2', 'str ', '1')
+
+    # main(r'B:\1', 'str ', '2')
 
     parser = argparse.ArgumentParser(
         description='The password is allowed to be empty, and if the password contains spaces, enclose it with double quotation marks "".' ,

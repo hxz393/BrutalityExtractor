@@ -4,6 +4,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+# noinspection DuplicatedCode
 def get_file_paths(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
     """
     获取目标目录下所有文件的路径。
