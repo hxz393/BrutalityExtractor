@@ -3,231 +3,25 @@ import time
 import os.path
 import requests
 import urllib3
-import logging
 from multiprocessing import Pool, freeze_support, cpu_count
-from threading import Thread
 import psutil
 from functools import partial
-import configparser
-from pathlib import Path
 
 import ttkbootstrap as ttk
 import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
-from ttkbootstrap.style import Bootstyle
-from tkinter import filedialog
 from tkfontawesome import icon_to_image
 
 from modules import *
+from modules import select_file_or_directory
 
-# 初始化配置
-CP = configparser.ConfigParser()
-
-# 如果配置文件存在，读取配置文件
-if Path(CONFIG_PATH).exists():
-    CP = config_read(CONFIG_PATH)
-
-# 先更新 "DEFAULT" section，不论是否已经存在
-CP.read_dict(DEFAULT_CONFIG)
-
-# 检查是否存在 "main" section，如果不存在则添加
-if not CP.has_section("main"):
-    CP.add_section("main")
-
-# 最后写入配置文件
-with open(CONFIG_PATH, 'w', encoding="utf-8") as configfile:
-    CP.write(configfile)
-
-# 使用包装函数获取配置值
-path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)
-path_dest_config = config_get(CP, 'main', 'path_dest', CP.get)
-password_config = config_get(CP, 'main', 'password', CP.get)
-parallel_config = config_get(CP, 'main', 'parallel', CP.getint)
-no_warnning_config = config_get(CP, 'main', 'no_warnning', CP.getint)
-is_delete_config = config_get(CP, 'main', 'is_delete', CP.getint)
-log_level_config = config_get(CP, 'main', 'log_level', CP.get)
-log_size_config = config_get(CP, 'main', 'log_size', CP.getint)
-log_count_config = config_get(CP, 'main', 'log_count', CP.getint)
-is_extra_config = config_get(CP, 'main', 'is_extra', CP.getint)
-is_redundant_config = config_get(CP, 'main', 'is_redundant', CP.getint)
-is_empty_config = config_get(CP, 'main', 'is_empty', CP.getint)
-xcl_dir_config = config_get(CP, 'main', 'xcl_dir', CP.get)
-xcl_file_config = config_get(CP, 'main', 'xcl_file', CP.get)
-no_tooltip_config = config_get(CP, 'main', 'no_tooltip', CP.getint)
-mini_skin_config = config_get(CP, 'main', 'mini_skin', CP.getint)
-theme_config = config_get(CP, 'main', 'theme', CP.get)
-lang_config = config_get(CP, 'main', 'lang', CP.get)
-alpha_config = config_get(CP, 'main', 'alpha', CP.getfloat)
-
-# 校准配置
-theme_config = theme_config if theme_config in THEME_LIST else 'yeti'
-log_level_config = log_level_config if log_level_config in LOG_LEVEL_LIST else 'INFO'
-lang_config = lang_config if lang_config in LANG_LIST else 'ENG'
-
-# 图标
-FONT_SIZE = 10 if mini_skin_config else 16
-ICO_SIZE = 16 if mini_skin_config else 48
-
-# 初始化语言配置
-LANG = LANG_DICT[lang_config]
-
-# 初始化日志记录
-logging_config(console_output=True, log_file="logs/run.log", log_level=log_level_config, max_log_size=log_size_config, backup_count=log_count_config)
 logger = logging.getLogger(__name__)
+logging_config(**LOG_CONFIG_DICT)
 
 
 
-def thread_it(func, *args, daemon=True, name=None):
-    """
-    多线程运行
 
-    :param func: 函数名
-    :param daemon: 后台线程
-    :param name: 新线程名字
-
-    """
-
-    # noinspection PyShadowingNames
-    def wrapper(*args):
-        try:
-            func(*args)
-        except Exception as e:
-            logger.error(f"线程发生错误 {name}: {e}")
-
-    t = Thread(target=wrapper, args=args, daemon=daemon, name=name)
-    t.start()
-
-
-def set_priority(pid=None, priority=psutil.REALTIME_PRIORITY_CLASS):
-    if pid is None:
-        pid = os.getpid()
-
-    p = psutil.Process(pid)
-
-    p.nice(priority)
-
-
-# noinspection PyUnusedLocal,PyArgumentList,DuplicatedCode
-class ToolTip:
-    def __init__(self, widget, text, switch):
-        self.widget = widget
-        self.text = text
-        self.tooltip_window = None
-        self.switch = switch
-        self.switch.trace_add('write', self.update_tooltip_status)
-
-        # 根据初始状态绑定事件
-        if not self.switch.get():
-            self.bind_tooltip()
-
-    def bind_tooltip(self):
-        self.widget.bind("<Enter>", self.show_tooltip)
-        self.widget.bind("<Leave>", self.hide_tooltip)
-
-    def unbind_tooltip(self):
-        self.widget.unbind("<Enter>")
-        self.widget.unbind("<Leave>")
-
-    def show_tooltip(self, event=None):
-        x, y, _, _ = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + 35
-        y += self.widget.winfo_rooty() + 35
-
-        self.tooltip_window = ttk.Toplevel(self.widget)
-        self.tooltip_window.wm_overrideredirect(True)
-        self.tooltip_window.wm_geometry(f"+{x}+{y}")
-
-        label = ttk.Label(self.tooltip_window, bootstyle='inverse-light', text=self.text, relief="solid", borderwidth=1, padding=(5, 1))
-        label.pack()
-
-    def hide_tooltip(self, event=None):
-        if self.tooltip_window:
-            self.tooltip_window.destroy()
-            self.tooltip_window = None
-
-    def update_tooltip_status(self, *args):
-        if self.switch.get():
-            self.unbind_tooltip()
-        else:
-            self.bind_tooltip()
-
-
-# noinspection PyArgumentList
-class CollapsingFrame(ttk.Frame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        self.columnconfigure(0, weight=1)
-        self.cumulative_rows = 0
-        self.img_down = icon_to_image("angle-double-down", fill="#FFFFFF", scale_to_height=ICO_SIZE)
-        self.img_up = icon_to_image("angle-double-up", fill="#FFFFFF", scale_to_height=ICO_SIZE)
-
-    def add(self, child, title="", bootstyle=PRIMARY, image='', display=0, **kwargs):
-        if child.winfo_class() != 'TFrame':
-            return
-
-        style_color = Bootstyle.ttkstyle_widget_color(bootstyle)
-        frm = ttk.Frame(self, bootstyle=style_color)
-        frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
-
-        image_label = ttk.Label(
-            master=frm,
-            bootstyle=(style_color, INVERSE),
-            compound=LEFT,
-            image=image
-        )
-        image_label.pack(side=LEFT, padx=10)
-
-        header = ttk.Label(
-            master=frm,
-            text=title,
-            bootstyle=(style_color, INVERSE),
-            font=('', FONT_SIZE),
-        )
-        header.pack(side=LEFT, fill=BOTH)
-
-        if kwargs.get('textvariable'):
-            header.configure(textvariable=kwargs.get('textvariable'))
-
-        def _func(c=child):
-            return self._toggle_open_close(c)
-
-        btn = ttk.Button(
-            master=frm,
-            image=self.img_down,
-            bootstyle=style_color,
-            command=_func
-        )
-        btn.pack(side=RIGHT)
-
-        child.btn = btn
-        child.grid(row=self.cumulative_rows + 1, column=0, sticky=NSEW)
-
-        self.cumulative_rows += 2
-
-        if not display:
-            btn['image'] = self.img_up
-            child.grid_remove()
-
-    def _toggle_open_close(self, child):
-        if child.winfo_viewable():
-            child.grid_remove()
-            child.btn.configure(image=self.img_up)
-        else:
-            child.grid()
-            child.btn.configure(image=self.img_down)
-
-        self.update_size()
-
-    def update_size(self):
-        self.update_idletasks()
-        plug_height = 30 if mini_skin_config else 62
-        new_height = sum(c.winfo_height() for c in self.grid_slaves()) + plug_height
-        # noinspection PyUnresolvedReferences
-        self.master.geometry(f"{self.master.winfo_width()}x{new_height}")
-
-
-# noinspection PyArgumentList,PyTypeChecker,DuplicatedCode
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
@@ -249,55 +43,20 @@ class BrutalityExtractor:
         self.root.place_window_center()
         self.root.minsize(550, 1)
         self.root.iconbitmap(convert_base64_to_ico(MAIN_ICO))
-        # self.root.grid_columnconfigure(0, weight=1)
-        # self.root.grid_rowconfigure(10, weight=1)
-        # self.root.geometry('550x600')
-        # self.root.overrideredirect(True)
-        # self.default_font = ttk.font.nametofont('TkDefaultFont')
-        # self.default_font['size'] = 4
-        # print(type(self.style.theme.colors.primary))
 
 
-        # 选择对话框
-        def select_file(entry, var):
-            file_path = filedialog.askopenfilename(filetypes=(("Text files", "*.txt"), ("INI files", "*.ini"), ("CSV files", "*.csv"), ("All files", "*.*")))
-            if file_path:
-                var.set(file_path)
-                entry.delete(0, END)
-                entry.insert(0, file_path)
-                entry.configure(foreground='black')
 
-        def select_directory(entry, var):
-            dir_path = filedialog.askdirectory()
-            if dir_path:
-                var.set(dir_path)
-                entry.delete(0, END)
-                entry.insert(0, dir_path)
-                entry.configure(foreground='black')
 
-        # 日志等级选择菜单样式更改
-        # noinspection PyUnusedLocal
-        def update_logl_style(*args):
-            selected_option = self.var_logl.get()
-            if selected_option == 'ERROR':
-                self.menubutton_logl.config(bootstyle="danger-outline")
-            elif selected_option == 'WARNING':
-                self.menubutton_logl.config(bootstyle="warning-outline")
-            elif selected_option == 'INFO':
-                self.menubutton_logl.config(bootstyle="info-outline")
-            else:
-                self.menubutton_logl.config(bootstyle="dark-outline")
+
+
+
 
         # 写入配置
-        # noinspection PyUnusedLocal
         def on_option_change(*args, config_key='', config_var=ttk.StringVar()):
             CP.set('main', config_key, str(config_var.get()))
             config_write(CONFIG_PATH, CP)
 
-        # 修改主题
-        def change_theme(theme):
-            self.style.theme_use(theme)
-            self.var_theme.set(theme)
+
 
         # 修改语言
         def change_language(lang):
@@ -308,9 +67,7 @@ class BrutalityExtractor:
                 message=LANG['change_language_msg']
             )
 
-        # 修改透明度
-        def change_alpha(var):
-            self.root.attributes("-alpha", var)
+
 
         # 文本框右键弹出窗口
         def create_right_click_menu(widget):
@@ -365,7 +122,7 @@ class BrutalityExtractor:
         self.entry_path.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
         create_right_click_menu(self.entry_path)
 
-        self.bottom_path = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_directory(self.entry_path, self.var_path))
+        self.bottom_path = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_file_or_directory(self.entry_path, self.var_path, 'folder'))
         self.bottom_path.grid(row=1, column=2, sticky=E, padx=(10, 15), pady=(15, 0))
 
         ToolTip(self.label_path, LANG["tooltip_label_path"], self.var_ntlp)
@@ -381,7 +138,7 @@ class BrutalityExtractor:
         self.entry_dest.grid(row=2, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
         create_right_click_menu(self.entry_dest)
 
-        self.bottom_dest = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_directory(self.entry_dest, self.var_dest))
+        self.bottom_dest = ttk.Button(self.basic_area, text=LANG["bottom_path_text"], bootstyle="secondary-outline", command=lambda: select_file_or_directory(self.entry_dest, self.var_dest, 'folder'))
         self.bottom_dest.grid(row=2, column=2, sticky=E, padx=(10, 15), pady=(15, 0))
 
         ToolTip(self.label_dest, LANG["tooltip_label_dest"], self.var_ntlp)
@@ -397,7 +154,7 @@ class BrutalityExtractor:
         self.entry_pass.grid(row=3, column=1, sticky=W + E, padx=(0, 0), pady=(15, 15))
         create_right_click_menu(self.entry_pass)
 
-        self.bottom_pass = ttk.Button(self.basic_area, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_pass, self.var_pass))
+        self.bottom_pass = ttk.Button(self.basic_area, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file_or_directory(self.entry_pass, self.var_pass, 'file'))
         self.bottom_pass.grid(row=3, column=2, sticky=E, padx=(10, 15), pady=(15, 15))
 
         ToolTip(self.label_pass, LANG["tooltip_label_pass"], self.var_ntlp)
@@ -456,7 +213,7 @@ class BrutalityExtractor:
 
         # 日志等级相关元素
         self.var_logl = create_config_var(log_level_config, 'log_level')
-        self.var_logl.trace_add('write', update_logl_style)
+        self.var_logl.trace_add('write', self.update_logl_style)
 
         self.label_logl = ttk.Label(self.advance_area_fr3, text=LANG["label_logl_text"])
         self.label_logl.pack(side=ttk.LEFT)
@@ -471,7 +228,7 @@ class BrutalityExtractor:
         self.menu_logl.add_radiobutton(label='DEBUG', value='DEBUG', variable=self.var_logl)
 
         self.menubutton_logl['menu'] = self.menu_logl
-        update_logl_style()
+        self.update_logl_style()
         ToolTip(self.label_logl, LANG["tooltip_label_logl"], self.var_ntlp)
 
         # 日志大小相关元素
@@ -543,7 +300,7 @@ class BrutalityExtractor:
         self.menu_theme = ttk.Menu(self.menubutton_theme, tearoff=False)
 
         for item in THEME_LIST:
-            self.menu_theme.add_command(label=item, command=lambda theme=item: change_theme(theme))
+            self.menu_theme.add_command(label=item, command=lambda theme=item: self.change_theme(theme))
         self.menubutton_theme.configure(menu=self.menu_theme)
         ToolTip(self.label_theme, LANG["tooltip_label_theme"], self.var_ntlp)
 
@@ -573,7 +330,7 @@ class BrutalityExtractor:
         self.label_alpha = ttk.Label(self.skin_area_fr3, text=LANG["label_alpha_text"])
         self.label_alpha.pack(side=ttk.LEFT)
 
-        self.scale_alpha = ttk.Scale(self.skin_area_fr3, bootstyle='success', variable=self.var_alpha, from_=0.20, to=1.00, command=lambda var=self.var_alpha.get(): change_alpha(var))
+        self.scale_alpha = ttk.Scale(self.skin_area_fr3, bootstyle='success', variable=self.var_alpha, from_=0.20, to=1.00, command=lambda var=self.var_alpha.get(): self.change_alpha(var))
         self.scale_alpha.pack(side=ttk.LEFT)
 
         ToolTip(self.label_alpha, LANG["tooltip_label_alpha"], self.var_ntlp)
@@ -641,7 +398,7 @@ class BrutalityExtractor:
         self.entry_xcld.grid(row=1, column=1, sticky=W + E, padx=(0, 0), pady=(0, 0))
         create_right_click_menu(self.entry_xcld)
 
-        self.bottom_xcld = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_xcld, self.var_xcld))
+        self.bottom_xcld = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file_or_directory(self.entry_xcld, self.var_xcld, 'file'))
         self.bottom_xcld.grid(row=1, column=2, sticky=E, padx=(10, 0), pady=(0, 0))
 
         ToolTip(self.label_xcld, LANG["tooltip_label_xcld"], self.var_ntlp)
@@ -657,7 +414,7 @@ class BrutalityExtractor:
         self.entry_xclf.grid(row=2, column=1, sticky=W + E, padx=(0, 0), pady=(15, 0))
         create_right_click_menu(self.entry_xclf)
 
-        self.bottom_xclf = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file(self.entry_xclf, self.var_xclf))
+        self.bottom_xclf = ttk.Button(self.extra_area_fr3, text=LANG["bottom_pass_text"], bootstyle="secondary-outline", command=lambda: select_file_or_directory(self.entry_xclf, self.var_xclf, 'file'))
         self.bottom_xclf.grid(row=2, column=2, sticky=E, padx=(10, 0), pady=(15, 0))
 
         ToolTip(self.label_xclf, LANG["tooltip_label_xclf"], self.var_ntlp)
@@ -725,6 +482,27 @@ class BrutalityExtractor:
         # 定义变量
         self.var_logl.set('INFO') if self.var_logl.get() not in LOG_LEVEL_LIST else None
         self.var_lang.set('ENG') if self.var_lang.get() not in LANG_LIST else None
+
+
+
+    # 日志等级选择菜单样式更改
+    def update_logl_style(self, *args):
+        log_level_styles = {
+            'ERROR': 'danger-outline',
+            'WARNING': 'warning-outline',
+            'INFO': 'info-outline'
+        }
+        selected_option = self.var_logl.get()
+        self.menubutton_logl.config(bootstyle=log_level_styles.get(selected_option, 'dark-outline'))
+
+    # 修改主题
+    def change_theme(self, theme):
+        self.style.theme_use(theme)
+        self.var_theme.set(theme)
+
+    # 修改透明度
+    def change_alpha(self, var):
+        self.root.attributes("-alpha", var)
 
     # 检查更新函数
     def check_update(self):
@@ -812,6 +590,7 @@ class BrutalityExtractor:
 
     # 主函数
     def main(self):
+
         # 初始化变量
         password = set(read_file_to_list(self.entry_pass.get()) if os.path.isfile(self.entry_pass.get()) else [self.entry_pass.get()])
         path_zip = self.entry_path.get()
@@ -927,35 +706,54 @@ class BrutalityExtractor:
 
             # 解压后操作
             def post_action(result):
-                return_code = result['code']
                 nonlocal failed_counts
                 nonlocal finished_counts
+                return_code = result['code']
+                main_file = result['file_info']['main_file']
 
-                if return_code == 2:
-                    remove_target(result['file_info']['target_path'])
-                    failed_counts += 1
-                    self.text_logs.insert(END, result['std'] + '\n', "red")
-                elif return_code == 0:
+                # 错误代码
+                ERROR_CODE = {
+                    -1: LANG["unzip_run_failed"].format(main_file),
+                    0: LANG["unzip_success"].format(main_file),
+                    1: LANG["unzip_failed1"].format(main_file),
+                    2: LANG["unzip_failed2"].format(main_file),
+                    3: LANG["unzip_failed3"].format(main_file),
+                    4: LANG["unzip_failed4"].format(main_file),
+                    5: LANG["unzip_failed5"].format(main_file),
+                    6: LANG["unzip_failed6"].format(main_file),
+                    7: LANG["unzip_failed7"].format(main_file),
+                    8: LANG["unzip_failed8"].format(main_file),
+                    9: LANG["unzip_failed9"].format(main_file),
+                    10: LANG["unzip_failed10"].format(main_file),
+                }
+
+                if return_code == 0:
                     [remove_target(file_del) for file_del in result['file_info']['file_list']] if is_delete == 1 else None
                     finished_counts += 1
-                    self.text_logs.insert(END, result['std'] + '\n', "green")
+                    self.text_logs.insert(END, ERROR_CODE[return_code] + '\n', "green")
+                else:
+                    remove_target(result['file_info']['target_path'])
+                    failed_counts += 1
+                    self.text_logs.insert(END, ERROR_CODE[return_code] + '\n', "red")
 
                 update_progress(file_in_total_number)
 
             # 多进程解压
+
             thread_pool = Pool(processes=parallel)
             for file_info in file_infos:
-                thread_pool.apply_async(file_unzip, args=(file_info, password, logger), callback=post_action)
+                thread_pool.apply_async(file_unzip, args=(file_info, password), callback=post_action)
             thread_pool.close()
             thread_pool.join()
 
-            # unzip(file_infos[0], password, logger)
 
             elapsed_time = round(time.time() - start_time, 2)
             your_speed = calculate_transfer_speed(file_size, elapsed_time)
 
             logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed))
-            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"], message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed)))
+            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"],
+                                                      message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time,
+                                                                                                your_speed)))
 
         # 故障处理
         except Exception as e:
@@ -976,6 +774,8 @@ class BrutalityExtractor:
 if __name__ == '__main__':
     freeze_support()
     set_priority()
+
+
 
     app = BrutalityExtractor()
     app.run()

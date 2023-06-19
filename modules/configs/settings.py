@@ -10,6 +10,8 @@ ZIP_FILE_TYPE_DICT = {
 
 CONFIG_PATH = 'config/config.ini'
 
+LOG_PATH = 'logs/run.log'
+
 DEFAULT_CONFIG = {
     'DEFAULT': {
         'path_zip': '',

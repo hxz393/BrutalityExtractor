@@ -2,31 +2,29 @@ import re
 import subprocess
 import os
 from pathlib import Path
-
+from typing import Set, Dict, Union, Optional
 from file_ops import get_target_size, get_resource_path
+import logging
 
+logger = logging.getLogger(__name__)
 BIN_7Z_PATH = get_resource_path('bin/7z.exe')
 
 
-
-from configs.lang_dict import LANG_DICT
-LANG = LANG_DICT['CHS']
-
-
-
-def file_unzip(file_info: dict, password_set: set, logger) -> dict[str, str | int]:
+def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -> Dict[str, Union[int, Dict[str, Union[str, list]]]]:
     """
     解压文件函数
 
-    :param file_info: 文件信息字典，格式为：{'target_path': '目标路径', 'main_file_path': '主文件路径', 'grouped_file_list': ['文件路径1', '文件路径2', '文件路径3'...]}
+    :param file_info: 文件信息字典，格式为：{'target_path': '目标路径', 'main_file': '主文件路径', 'file_list': ['文件路径1', '文件路径2', '文件路径3'...]}
+    :type file_info: Dict[str, Union[str, list]]
     :param password_set: 密码集合，格式为：{'pass1', 'pass2'...}
-    :param logger: 日志记录器
+    :type password_set: Set[str]
 
     :return: 返回解压结果字典，格式为：{'code': 状态码, 'file_info': 原始file_info字典}
+    :rtype: Dict[str, Union[int, Dict[str, Union[str, list]]]]
     """
     target_path = file_info['target_path']
     main_file = file_info['main_file']
-    result_data = {'code': 2, 'file_info': file_info}
+    result_data = {'code': -1, 'file_info': file_info}
 
     if not password_set:
         password_set = {''}
@@ -42,62 +40,58 @@ def file_unzip(file_info: dict, password_set: set, logger) -> dict[str, str | in
             else:
                 result = subprocess.run(unzip_command, capture_output=True, text=True)
         except Exception as e:
-            result_data['code'] = 1
-            result_data['std'] = LANG["unzip_run_failed"].format(unzip_command, e)
-            logger.warning(result_data['std'])
+            result_data['code'] = -1
+            logger.warning(f"Command execution failed: {unzip_command}, Error message: {e}")
             return result_data
 
-        logger.debug(LANG["unzip_log_debug"].format(unzip_command, result.stdout.strip()))
+        logger.debug(f"Command: {unzip_command}\nOutput:\n{result.stdout.strip()}")
 
         if result.returncode == 0:
             info_size = int(re.search(r"Size:\s+(\d+)", result.stdout).group(1)) if re.search(r"Size:\s+(\d+)", result.stdout) else 0
-            size_target = sum(get_target_size(str(f)) for f in Path(target_path).rglob('*') if f.is_file())
-            if info_size == size_target:
+            if info_size == get_target_size(target_path):
                 result_data['code'] = 0
-                result_data['std'] = LANG["unzip_success"].format(main_file)
-                logger.info(result_data['std'])
+                logger.info(f"Decompression Success : {main_file}")
                 return result_data
             else:
-                result_data['std'] = LANG["unzip_failed1"].format(main_file)
-                logger.warning(result_data['std'])
+                result_data['code'] = 1
+                logger.warning(f"Decompression Failed : {main_file}, target size mismatch")
                 return result_data
         elif result.returncode == 2 and re.search(r"Wrong password", result.stderr):
-            result_data['std'] = LANG["unzip_failed2"].format(main_file, passwd)
-            logger.debug(result_data['std'])
+            result_data['code'] = 2
+            logger.debug(f"Decompression Failed : {main_file}, wrong password: {passwd}")
             continue
         elif result.returncode == 2 and re.search(r"Cannot open the file as archive", result.stderr):
-            result_data['std'] = LANG["unzip_failed3"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 3
+            logger.warning(f"Decompression Failed : {main_file}, unsupported file type")
             return result_data
         elif result.returncode == 2 and re.search(r"系统找不到指定的|Cannot find", result.stderr):
-            result_data['std'] = LANG["unzip_failed4"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 4
+            logger.warning(f"Decompression Failed : {main_file}, compressed file not found")
             return result_data
         elif result.returncode == 2 and re.search(r"Missing volume :", result.stderr):
-            result_data['std'] = LANG["unzip_failed5"].format(main_file, re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None)
-            logger.warning(result_data['std'])
+            result_data['code'] = 5
+            logger.warning(f'Decompression Failed : {main_file}, missing volume: {re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None}')
             return result_data
         elif result.returncode == 2 and re.search(r"CRC Failed|CRC Error", result.stderr):
-            result_data['std'] = LANG["unzip_failed6"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 6
+            logger.warning(f"Decompression Failed : {main_file}, CRC checksum failed")
             return result_data
         elif result.returncode == 2 and re.search(r"Headers Error", result.stderr):
-            result_data['std'] = LANG["unzip_failed7"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 7
+            logger.warning(f"Decompression Failed : {main_file}, file headers error")
             return result_data
         elif result.returncode == 2 and re.search(r"Unexpected end of archive", result.stderr):
-            result_data['std'] = LANG["unzip_failed8"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 8
+            logger.warning(f"Decompression Failed : {main_file}, unexpected end of archive")
             return result_data
         elif result.returncode == 2 and re.search(r"Data Error :", result.stderr):
-            result_data['std'] = LANG["unzip_failed9"].format(main_file)
-            logger.warning(result_data['std'])
+            result_data['code'] = 9
+            logger.warning(f"Decompression Failed : {main_file}, file is corrupted")
             return result_data
         else:
-            result_data['std'] = LANG["unzip_failed10"].format(main_file, result.returncode)
-            logger.warning(result_data['std'])
-            logger.error(result.stderr)
+            result_data['code'] = 10
+            logger.warning(f"Decompression Failed : {main_file}, error code: {result.returncode}, error info: {result.stderr}")
             return result_data
-    result_data['std'] = LANG["unzip_failed11"].format(main_file)
-    logger.warning(result_data['std'])
+    result_data['code'] = 2
+    logger.warning(f"Decompression Failed : {main_file}, all passwords failed")
     return result_data

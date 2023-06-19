@@ -34,6 +34,12 @@ def logging_config(log_file: Optional[str] = None,
     log_level = log_level if log_level.upper() in log_levels else 'INFO'
 
     logger = getLogger()
+
+    if logger.handlers:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+            handler.close()
+
     logger.setLevel(getattr(logging, log_level.upper()))
     formatter = Formatter(default_log_format)
 
