@@ -16,7 +16,6 @@ class CollapsingFrame(ttk.Frame):
         """
         初始化 CollapsingFrame 对象。
 
-        :type master: ttk.Frame
         :param master: 父 Frame。
         """
         super().__init__(master, **kwargs)

@@ -43,3 +43,5 @@ THEME_LIST = ["yeti", "simplex", "morph", "cerculean", "sandstone", "united", "c
 LOG_LEVEL_LIST = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 LANG_LIST = ['ENG', 'CHS']
+
+CHECK_UPDATE_URL = "https://blog.x2b.net/ver/brutalityextractorversion.txt"

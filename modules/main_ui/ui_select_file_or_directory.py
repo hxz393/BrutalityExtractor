@@ -6,7 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def select_file_or_directory(entry: tkinter.Entry, var: tkinter.StringVar, mode: str) -> None:
+def ui_select_file_or_directory(entry: tkinter.Entry, var: tkinter.StringVar, mode: str) -> None:
     """
     选择文件或目录，并将其路径显示在指定的 tkinter.Entry 组件上。
 

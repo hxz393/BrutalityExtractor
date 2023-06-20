@@ -3,8 +3,9 @@ import subprocess
 import os
 from pathlib import Path
 from typing import Set, Dict, Union, Optional
-from file_ops import get_target_size, get_resource_path
 import logging
+
+from file_ops import get_target_size, get_resource_path
 
 logger = logging.getLogger(__name__)
 BIN_7Z_PATH = get_resource_path('bin/7z.exe')

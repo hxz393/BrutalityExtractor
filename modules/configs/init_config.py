@@ -5,11 +5,12 @@ from filelock import FileLock
 import logging
 
 from modules.module_use import config_read, config_write, config_get
-from modules.configs import *
+from modules.configs.lang_dict import LANG_DICT
+from modules.configs.settings import *
 
 logger = logging.getLogger(__name__)
 
-lock = FileLock("my_lock_file.lock")
+lock = FileLock("config.lock")
 
 with lock:
     CP = configparser.ConfigParser()
@@ -75,3 +76,4 @@ LOG_CONFIG_DICT = {
     'max_log_size': log_size_config,
     'backup_count': log_count_config,
 }
+

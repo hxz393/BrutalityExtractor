@@ -26,11 +26,12 @@ def remove_target_matched(target_path: Union[str, os.PathLike], match_list: List
         return None
 
     try:
+        match_list_lower = [item.lower() if isinstance(item, str) else item for item in match_list]
         matched_paths = [
             os.path.normpath(os.path.join(root, file))
             for root, dirs, files in os.walk(target_path)
             for file in files + dirs
-            if file in match_list
+            if file.lower() in match_list_lower
         ]
         for path in matched_paths:
             remove_target(path)

@@ -43,18 +43,18 @@ def group_files_by_pattern(target_groups: Dict[str, List[str]]) -> Optional[List
             main_file = matched_files['rar'][0]
             file_list = matched_files['rar_old'] + matched_files['rar']
             part_lists.append({'target_path': target_path, 'main_file_path': main_file, 'grouped_file_list': file_list})
-            other_path_list = list(set(grouped_file_list) - set(file_list))
+            other_path_list = list(set(grouped_file_list).difference(file_list))
         elif matches['zip_winzip'] > 0 and matches['zip'] == 1:
             main_file = matched_files['zip'][0]
             file_list = matched_files['zip_winzip'] + matched_files['zip']
             part_lists.append({'target_path': target_path, 'main_file_path': main_file, 'grouped_file_list': file_list})
-            other_path_list = list(set(grouped_file_list) - set(file_list))
+            other_path_list = list(set(grouped_file_list).difference(file_list))
         elif any(len(matched_files[key]) > 0 for key in regexes):
             for _, v in matched_files.items():
                 if len(v) > 0:
                     part_lists.append({'target_path': target_path, 'main_file_path': v[0], 'grouped_file_list': v})
                     full_path_list.extend(v)
-            other_path_list = list(set(grouped_file_list) - set(full_path_list))
+            other_path_list = list(set(grouped_file_list).difference(full_path_list))
         else:
             for i in grouped_file_list:
                 part_lists.append({'target_path': target_path, 'main_file_path': i, 'grouped_file_list': [i]})

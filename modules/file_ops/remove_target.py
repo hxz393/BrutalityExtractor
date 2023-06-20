@@ -19,7 +19,7 @@ def remove_permissions(func: Callable[[Path], Any], path: Path, _: Any) -> None:
     :param _: 用于异常处理的错误信息。
     :type _: Any
     """
-    path.chmod(0o777)
+    # path.chmod(0o777)
     os.chmod(path, stat.S_IWRITE)
     func(path)
 

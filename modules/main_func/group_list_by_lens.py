@@ -5,6 +5,7 @@ from .group_files_by_pattern import group_files_by_pattern
 
 logger = logging.getLogger(__name__)
 
+
 def group_list_by_lens(path_groups: Dict[str, List[str]]) -> Optional[List[Dict[str, Any]]]:
     """
     检测分组文件列表个数，单个的直接加入列表，多个的处理后加入列表
@@ -20,6 +21,7 @@ def group_list_by_lens(path_groups: Dict[str, List[str]]) -> Optional[List[Dict[
                 full_infos.append({'target_path': path, 'main_file_path': path_list[0], 'grouped_file_list': path_list})
             else:
                 full_infos.extend(group_files_by_pattern({'target_path': path, 'grouped_file_list': path_list}))
+        logger.debug(f"full_infos: \n{full_infos}")
         return full_infos
     except Exception as e:
         logger.error(f"An error occurred while grouping list by lengths: {e}")

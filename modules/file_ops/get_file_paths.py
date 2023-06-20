@@ -22,7 +22,9 @@ def get_file_paths(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
         if not os.path.isdir(target_path):
             logger.error(f"'{target_path}' is not a valid directory.")
             return None
-        return [os.path.normpath(os.path.join(root, file)) for root, _, files in os.walk(target_path) for file in files]
+        file_paths = [os.path.normpath(os.path.join(root, file)) for root, _, files in os.walk(target_path) for file in files]
+        logger.debug(f"file_paths: \n{file_paths}")
+        return file_paths
     except Exception as e:
         logger.error(f"An error occurred while retrieving file paths: {e}")
         return None
