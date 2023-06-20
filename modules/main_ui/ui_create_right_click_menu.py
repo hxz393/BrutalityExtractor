@@ -1,7 +1,8 @@
 import logging
 from typing import Union
 import ttkbootstrap as ttk
-from modules import LANG
+
+from modules.configs import LANG
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ def ui_create_right_click_menu(widget: Union[ttk.Entry, ttk.Text]) -> None:
     :rtype: None
     """
 
+    # noinspection PyShadowingNames
     def create_menu(event) -> None:
         """创建右键菜单并显示。"""
         try:

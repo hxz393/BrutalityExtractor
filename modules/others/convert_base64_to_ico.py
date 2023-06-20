@@ -1,8 +1,8 @@
+import atexit
 import base64
+import logging
 import os
 import tempfile
-import atexit
-import logging
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -15,6 +15,7 @@ def remove_temp_file(path: str):
     except Exception as e:
         logger.error(f"Error when remove temp file: {e}")
         pass
+
 
 def convert_base64_to_ico(base64_string: str) -> Optional[str]:
     """

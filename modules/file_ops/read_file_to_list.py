@@ -1,8 +1,9 @@
-import os
 import logging
+import os
 from typing import List, Union, Optional
 
 logger = logging.getLogger(__name__)
+
 
 def read_file_to_list(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
     """

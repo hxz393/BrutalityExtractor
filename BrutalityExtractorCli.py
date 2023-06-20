@@ -1,10 +1,9 @@
+import argparse
+import locale
 import os
 import time
-import argparse
-import logging
-import locale
 from multiprocessing import Pool, freeze_support
-from typing import Optional, Dict, Union
+from typing import Optional, Union
 
 from modules import *
 
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 logging_config(console_output=True)
 
 
-# noinspection DuplicatedCode
+# noinspection DuplicatedCode,PyShadowingNames
 def main(path_zip: Union[str, os.PathLike], password: Optional[str], parallel: str) -> int:
     """
     Command-line mode\n
@@ -86,7 +85,7 @@ def main(path_zip: Union[str, os.PathLike], password: Optional[str], parallel: s
 if __name__ == '__main__':
     LANG = LANG_DICT['CHS'] if locale.getdefaultlocale()[0] == 'zh_CN' else LANG_DICT['ENG']
     freeze_support()
-    main(r'B:\1', 'str ', '16')
+    # main(r'B:\2', 'str ', '16')
 
     parser = argparse.ArgumentParser(
         description='The password is allowed to be empty, and if the password contains spaces, enclose it with double quotation marks "".',

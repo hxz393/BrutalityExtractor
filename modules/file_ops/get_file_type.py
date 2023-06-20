@@ -1,7 +1,8 @@
-import os
-import magic
-from typing import Optional, Union
 import logging
+import os
+from typing import Optional, Union
+
+import magic
 
 logger = logging.getLogger(__name__)
 

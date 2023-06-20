@@ -1,7 +1,7 @@
 import logging
+import os
 from logging import getLogger, StreamHandler, Formatter
 from logging.handlers import RotatingFileHandler
-import os
 from typing import Optional
 
 

@@ -2,7 +2,7 @@
 
 # Introduction
 
-BrutalityExtractor is a brute-force decompression software specifically designed for high-performance systems. It is optimized for modern multi-core processors and high-speed solid-state drives, offering speeds that are more than 5 times faster than common decompression software, thoroughly exploiting the performance of computer hardware.
+BrutalityExtractor is a multi-process unzipping software designed for high-performance systems. Optimized for modern multi-core processors and high-speed solid-state drives, its batch decompression speed is more than 5 times higher than that of common decompression software, fully utilizing the performance of computer hardware.
 
 Features:
 
@@ -14,7 +14,11 @@ Features:
 
 Screenshot:
 
-![v1.0.0 screenshot:](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/v1.0.0-en.jpg)
+![newest screenshot](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/ui-en.jpg)
+
+Command-Line:
+
+![command-line screenshot](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/cli-en.jpg)
 
 
 
@@ -24,29 +28,27 @@ Please read carefully the following usage limitations of the software.
 
 ### OS
 
-The software development and compilation environment is `Win10 x64` Professional Workstation Edition, version `22H2`. Users of any `Win10 x64` operating system can use it directly.
+The software development and compilation environment is `Win10 x64` Professional Workstation Edition, version `22H2`. Users with `Win10 x64` or above can directly use the software.
 
-Although not tested under `Win 11`, it should work fine. Lower versions like `Win 7` and `Win XP` are not supported due to the use of `Python 3.10`.
+Lower versions such as `Win 7` and `Win XP` are not supported due to the use of `Python 3.10`.
 
-For other operating systems, theoretically, it is possible to manually compile it into an executable file. Refer to the self-packaging section below for the compilation process.
+In theory, other operating systems can manually compile into executable files. For the compilation process, please refer to the Self-packaging section below.
 
 ### Processor
 
-When the processor is less than 2 cores 4 threads, the software will run in single-process mode and there will be no speed increase.
+When the processor configuration is less than 2 cores and 4 threads, the software will run in single-process mode, with no speed increase.
 
-For processor above 2 cores 4 threads, for stability considerations, the maximum number of processes that can be set by the software does not exceed half of the processor thread count.
+When the processor configuration is more than 2 cores and 4 threads, for stability considerations, the maximum number of processes that can be set by the software does not exceed half of the processor thread count.
 
-The number of processes will not exceed the total number of files to be decompressed.
-
-You can choose to run multiple instances of the software to effectively ignore this limitation. For any system crashes, data loss, etc. that result from this, please assess the impact yourself.
+Of course, you can choose to run multiple instances of the software, essentially ignoring this limit. However, this could potentially cause system crashes, data loss, and other side effects. Please assess the impact yourself.
 
 ### Memory
 
-The memory requirement is relatively flexible, as it's impossible to assess the actual memory required at runtime. The memory required for decompression is determined by factors such as file compression format, compression algorithm, and whether solid compression is used.
+The memory requirements are quite flexible, as it is impossible to evaluate the actual memory needed at runtime. The memory required for decompression is determined by factors such as the file compression format, compression algorithm, and whether solid compression is used. When the memory is full, decompression failures, program errors, and system anomalies may occur.
 
-If the memory is fully occupied, decompression may fail, program errors may occur, system errors may be reported, etc. A safer approach is to store files or volumes larger than 4GB separately and decompress them manually. This is because these files may take up a lot of memory when decompressed, and this software does not accelerate large-volume files.
+It is recommended to manually decompress compressed files that are single or split volumes larger than 4GB. This is because decompressing these types of files may consume a lot of memory, and the current software does not speed up the decompression of large compressed packages.
 
-If the available memory size exceeds the total size of the files to be decompressed, feel free to use the software.
+The strategy of using multi-threading to speed up the decompression of large compressed packages is being evaluated. If the results are good, it will be included in subsequent updates.
 
 ### Hard Disk
 
@@ -69,7 +71,9 @@ A general table of hard disk specifications and corresponding process numbers is
 Software download methods:
 
 - Method 1: Go to the [release](https://github.com/hxz393/BrutalityExtractor/releases) page to download the latest executable file, named `BrutalityExtractor.exe` or `BrutalityExtractorCli.exe`. It can be used directly after download.
-- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor%20v1.0.2.zip) download.
+- Method 2: [Direct link](https://www.x2b.net/download/BrutalityExtractor.7z) download.
+
+The downloaded compressed file needs to be decompressed before running the executable file, otherwise the configs will not be saved.
 
 
 
@@ -149,7 +153,7 @@ Extraction Directory or Destination Directory is a mandatory field.
 
 - **Destination Directory**
 
-  Enter the directory where the decompressed files will be stored. The structure of the decompressed directory will be consistent with that in the extraction directory. For example, `B:/Archive/xd1/test.zip` will be decompressed to `B:/New/xd1/test`.
+  Enter the directory where the decompressed files will be stored. The structure of the decompressed directory will be consistent with that in the extraction directory. For example, `B:/Archive/xd1/test.zip` will be decompressed to `B:/New/xd1/test`, if destination directory is `B:/New`.
 
   Setting the destination directory to a different disk can slightly increase the decompression speed.
 
@@ -159,7 +163,7 @@ Extraction Directory or Destination Directory is a mandatory field.
 
   The software itself does not process password attempts with multiple processes. If you need to brute force crack the compressed file password, you can divide the password list into multiple parts and run multiple instances of the software. Set the log level to Debug to see the attempt results in the log. Do not use this feature for illegal purposes.
 
-  To make sure the password is read correctly, please save the text using the UTF-8 encoding format.
+  To make sure the password is read correctly, please save the text using the `UTF-8` encoding format.
 
 
 
@@ -203,7 +207,7 @@ There are some adjustable theme settings.
 
 - **Language**
 
-  Change the software display language. Currently, only Chinese and English are available. Welcome to submit reliable translations for other languages. The language dictionary is located at `config/lang.py`.
+  Change the software display language. Currently, only Chinese and English are available. Welcome to submit reliable translations for other languages. The language dictionary is located at `modules/configs/lang_dict.py`.
 
 - **Alpha**
 
@@ -227,7 +231,7 @@ Additional features exist independently of the decompression function and provid
 
   Delete all scanned empty directories under the specified directory. Sometimes empty directories have their special uses, so clean up carefully.
 
-- **Delete Files and Directories**
+- **Delete Files (Directories)**
 
   Specified file or directory names will be directly deleted from the destination directory. Like the decryption password, it supports name lists file.
 
@@ -251,41 +255,10 @@ Parameter description:
 - `-c`: Set the number of simultaneous decompression processes. There is no upper limit, so enter it carefully.
 - `-p`: Specify the decompression password or password list. If the password contains spaces, you need to enclose the password with double quotes `""`.
 
-Below is an example of use, specifying the decompression directory as `B:\Archive`, the password list as `B:/pass.txt`, and the number of running processes as 50:
+Below is an example of use, specifying the decompression directory as `B:\Archive`, the password list as `B:/pass.txt`, and the number of running processes as 16:
 
 ```sh
-B:\new>BrutalityExtractorCli.exe -c 50 -d B:\Archive -p B:/pass.txt
-BrutalityExtractor Copyright 2023 by assassing
-2023-06-11 16:49:53,508 - INFO - BrutalityExtractorCli::main - ######Extracting files######
-2023-06-11 16:49:53,522 - WARNING - file_ops::group_files_main - File B:\Archive\3333.flac is not supported, its type is: audio/x-flac
-2023-06-11 16:49:53,523 - WARNING - file_ops::group_files_main - File B:\Archive\5555.zip is not supported, its type is: application/octet-stream
-2023-06-11 16:49:53,525 - WARNING - file_ops::group_files_main - File B:\Archive\S1 is not supported, its type is: image/jpeg
-2023-06-11 16:49:55,793 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\a1.tar
-2023-06-11 16:49:55,802 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\new\a1.tar
-2023-06-11 16:49:55,803 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\s2
-2023-06-11 16:49:55,804 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\A1.bz2
-2023-06-11 16:49:55,804 - WARNING - file_unzip::unzip - Decompression Failed : B:\Archive\7777.7z.001, unexpected end of archive
-2023-06-11 16:49:55,804 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\c.001.002.003.zip.gz
-2023-06-11 16:49:55,805 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\3333.gz
-2023-06-11 16:49:55,807 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\new\A1.bz2
-2023-06-11 16:49:55,829 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\3333.001
-2023-06-11 16:49:55,841 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\new\8888.001
-2023-06-11 16:49:55,842 - WARNING - file_unzip::unzip - Decompression Failed : B:\Archive\new\3333.part01.rar, all passwords failed
-2023-06-11 16:49:55,844 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\8888.001
-2023-06-11 16:49:55,847 - WARNING - file_unzip::unzip - Decompression Failed : B:\Archive\5555.001.zip, unexpected end of archive
-2023-06-11 16:49:55,878 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\3333.zip
-2023-06-11 16:49:55,884 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\new\bb.zip
-2023-06-11 16:49:55,885 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\bb.zip
-2023-06-11 16:49:56,008 - WARNING - file_unzip::unzip - Decompression Failed : B:\Archive\3333.part1.rar, missing volume: 3333.part4.rar
-2023-06-11 16:49:56,390 - INFO - file_unzip::unzip - Decompression Success : B:\Archive\3333.rar
-2023-06-11 16:49:56,534 - INFO - BrutalityExtractorCli::main - ######Finished!######
-Total compressed files: 32
-Failed decompressions: 10
-Successful decompressions: 22
-Total compressed file size: 553.0 MB
-Processes: 50
-Time spent: 3.02 seconds
-Processing speed: 183.08 MB/s
+BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 ```
 
 
@@ -294,13 +267,23 @@ Processing speed: 183.08 MB/s
 
 When the software encounters errors during operation, first check the common problems and solutions summarized below. Then check whether there are the same problems in all [Issues](https://github.com/hxz393/BrutalityExtractor/issues). If it doesn't help, you can submit a new [Issue](https://github.com/hxz393/BrutalityExtractor/issues) and attach the relevant log files.
 
+## Startup error `'NoneType' object has no attribute 'read_dict'`
+
+After downloading the new version and overwriting the original executable file, an error occurred upon startup.
+
+**Cause**: The new version has significant changes and is not compatible with the configuration file of the old version.
+
+**Solution**: Delete the `config` folder at the location where the software is placed, and re-run to initialize the configuration file.
+
+
+
 ## The window is not normal after maximizing
 
 The collapse and expansion do not automatically adapt to the window height in full-screen mode.
 
 **Reason**: Due to the framework used, full-screen mode is not supported.
 
-Solution: Welcome to provide a solution.
+**Solution**: Welcome to provide a solution.
 
 
 
@@ -314,9 +297,25 @@ No. Please try professional software, such as `everything`, `PowerToys`, and oth
 
 
 
-# Update Log
+# Update Logs
 
 To avoid too long update logs, only the most recent update log is retained.
+
+## Version 1.1.0 (2023.06.20)
+
+Improvements:
+
+1. Optimized code structure, improved runtime speed;
+2. Merged the functionality of deleting junk files and folders into one feature;
+3. Optimized the log recording feature;
+4. Added default configuration items.
+
+Bug Fixes:
+
+1. Fixed performance issues caused by the `pathlib` library, replaced it with the `os` library;
+2. Fixed a bug that caused accidental deletion of files under specific circumstances.
+
+
 
 ## Version 1.0.2 (2023.06.15)
 

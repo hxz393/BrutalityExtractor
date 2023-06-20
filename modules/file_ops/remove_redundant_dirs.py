@@ -1,9 +1,10 @@
+import logging
 import os
 import uuid
-import logging
 from typing import List, Union, Optional
 
 logger = logging.getLogger(__name__)
+
 
 def remove_redundant_dirs(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
     """

@@ -1,7 +1,8 @@
-from typing import Union, Optional
 import logging
+from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
+
 
 def format_size(size: Union[int, float], is_disk: bool = False, precision: int = 2) -> Optional[str]:
     """

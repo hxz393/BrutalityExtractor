@@ -2,8 +2,8 @@ import os
 from typing import List, Dict, Any, Optional
 import logging
 
-from modules import get_file_type, rename_target_if_exist, get_folder_paths, create_directories, remove_target
-from configs.settings import ZIP_FILE_TYPE_DICT
+from modules.file_ops import get_file_type, rename_target_if_exist, get_folder_paths, create_directories, remove_target
+from modules.configs.settings import ZIP_FILE_TYPE_DICT
 
 logger = logging.getLogger(__name__)
 

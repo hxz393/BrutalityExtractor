@@ -1,6 +1,7 @@
 import configparser
 from typing import Any, Callable
 
+
 def config_get(config: configparser.ConfigParser, section: str, option: str, getter: Callable[[str, str], Any]) -> Any:
     """
     尝试使用指定的 getter 函数从配置中获取指定选项的值。

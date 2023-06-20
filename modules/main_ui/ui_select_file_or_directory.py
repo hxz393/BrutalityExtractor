@@ -1,10 +1,10 @@
+import logging
 import os
 import tkinter
 from tkinter import filedialog, END
-from typing import Union
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 def ui_select_file_or_directory(entry: tkinter.Entry, var: tkinter.StringVar, mode: str) -> None:
     """

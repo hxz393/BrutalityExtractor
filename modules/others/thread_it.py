@@ -1,10 +1,10 @@
-import time
-from typing import Any, Callable, Optional, Tuple
 import logging
 from threading import Thread
+from typing import Any, Callable, Optional, Tuple
 
 # 初始化日志记录器
 logger = logging.getLogger(__name__)
+
 
 def thread_it(func: Callable[..., Any], *args: Any, daemon: Optional[bool] = True, name: Optional[str] = None) -> None:
     """
@@ -22,6 +22,8 @@ def thread_it(func: Callable[..., Any], *args: Any, daemon: Optional[bool] = Tru
     :rtype: None
     :raise: 不会抛出异常，所有异常都被记录到日志中。
     """
+
+    # noinspection PyShadowingNames
     def wrapper(*args: Tuple[Any]) -> None:
         try:
             func(*args)

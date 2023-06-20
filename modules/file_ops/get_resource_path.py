@@ -1,7 +1,7 @@
+import logging
 import os
 import sys
 from typing import Union, Optional
-import logging
 
 logger = logging.getLogger(__name__)
 

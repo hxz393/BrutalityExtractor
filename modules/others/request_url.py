@@ -1,10 +1,11 @@
-import os
 import logging
-import requests
 from typing import Optional
+
+import requests
 import urllib3
 
 logger = logging.getLogger(__name__)
+
 
 def request_url(url: str) -> Optional[str]:
     """

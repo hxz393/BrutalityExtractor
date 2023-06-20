@@ -45,3 +45,7 @@ LOG_LEVEL_LIST = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 LANG_LIST = ['ENG', 'CHS']
 
 CHECK_UPDATE_URL = "https://blog.x2b.net/ver/brutalityextractorversion.txt"
+
+CPU_LIMIT = 50
+
+MEMORY_LIMIT = 70

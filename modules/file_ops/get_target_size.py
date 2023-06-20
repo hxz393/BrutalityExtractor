@@ -1,9 +1,10 @@
-import os
 import logging
-from typing import Union, Optional
+import os
 from concurrent.futures import ThreadPoolExecutor
+from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
+
 
 def get_file_size(file_path: Union[str, os.PathLike]) -> Optional[int]:
     """

@@ -1,12 +1,14 @@
+import logging
 import os
 from typing import Any
-import logging
 
-from modules import CP, config_write, CONFIG_PATH
+from modules.configs import CP, CONFIG_PATH
+from modules.module_use import config_write
 
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyUnusedLocal
 def ui_on_option_change(*args, config_key: str = '', config_var: Any = None) -> None:
     """
     当选项改变时，更新配置并写入文件。
@@ -25,8 +27,6 @@ def ui_on_option_change(*args, config_key: str = '', config_var: Any = None) -> 
 
         # 检查路径
         normalized_path = os.path.normpath(CONFIG_PATH)
-        if not os.path.exists(normalized_path):
-            raise FileNotFoundError(f"The configuration file path '{normalized_path}' does not exist.")
 
         # 写入文件
         config_write(normalized_path, CP)

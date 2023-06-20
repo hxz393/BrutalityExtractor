@@ -1,10 +1,11 @@
+import logging
 import os
 import re
 from collections import defaultdict
 from typing import List, Dict, Optional
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 def group_file_paths(paths_list: List[str]) -> Optional[Dict[str, List[str]]]:
     """

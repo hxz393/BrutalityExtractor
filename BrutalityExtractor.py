@@ -1,14 +1,13 @@
-import webbrowser
-import time
 import os.path
-from multiprocessing import Pool, freeze_support, cpu_count
-import psutil
-
-import ttkbootstrap as ttk
+import time
 import tkinter as tk
-from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
+import webbrowser
+from multiprocessing import Pool, freeze_support, cpu_count
+
+import psutil
+import ttkbootstrap as ttk
 from tkfontawesome import icon_to_image
+from ttkbootstrap.constants import *
 
 from modules import *
 
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 logging_config(**LOG_CONFIG_DICT)
 
 
+# noinspection PyUnusedLocal,PyArgumentList
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
@@ -31,7 +31,7 @@ class BrutalityExtractor:
         # 主窗口配置
         self.root = ttk.Window()
         self.style = ttk.Style(theme=theme_config)
-        self.root.title("BrutalityExtractor v1.0.3")
+        self.root.title("BrutalityExtractor v1.1.0")
         self.root.attributes("-alpha", alpha_config)
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
@@ -329,7 +329,7 @@ class BrutalityExtractor:
         self.extra_area_fr3.pack(fill=tk.X, padx=(15, 15), pady=(15, 15))
         self.extra_area_fr3.columnconfigure(1, weight=1)
 
-        # 排除文件相关元素
+        # 删除垃圾相关元素
         self.var_xclf = ui_create_config_var(xcl_file_config, 'xcl_file')
 
         self.label_xclf = ttk.Label(self.extra_area_fr3, text=LANG["label_xclf_text"])
@@ -358,7 +358,7 @@ class BrutalityExtractor:
         self.log_area_fr1.columnconfigure(0, weight=1)
 
         # 结果显示文本框相关元素
-        self.text_logs = tk.Text(self.log_area_fr1, wrap=NONE, height=15, width=56, undo=True)
+        self.text_logs = tk.Text(self.log_area_fr1, wrap=NONE, height=8, width=56, undo=True)
         self.text_logs.grid(row=0, column=0, sticky=W + E + N + S)
         self.text_logs.tag_config("red", foreground="#f04124")
         self.text_logs.tag_config("green", foreground="#43ac6a")
@@ -402,8 +402,8 @@ class BrutalityExtractor:
         self.bottom_run.grid(row=0, column=6, sticky='WE')
         ToolTip(self.bottom_run, LANG["bottom_run_text"], self.var_ntlp)
 
-    # 日志等级选择菜单样式更改
     def update_logl_style(self, *args):
+        """日志等级选择菜单样式更改"""
         log_level_styles = {
             'ERROR': 'danger-outline',
             'WARNING': 'warning-outline',
@@ -412,47 +412,50 @@ class BrutalityExtractor:
         selected_option = self.var_logl.get()
         self.menubutton_logl.config(bootstyle=log_level_styles.get(selected_option, 'dark-outline'))
 
-    # 修改主题
+    def update_progress(self, total, var):
+        """更新进度条"""
+        value = var.get()
+        if value < total:
+            value += 1
+            var.set(value)
+            self.bottom_run["value"] = value
+
     def change_theme(self, theme):
+        """修改主题"""
         self.style.theme_use(theme)
         self.var_theme.set(theme)
 
-    # 修改透明度
     def change_alpha(self, var):
+        """修改透明度"""
         self.root.attributes("-alpha", var)
 
-    # 修改语言
+    # noinspection PyShadowingNames
     def change_language(self, lang):
+        """修改语言"""
         self.var_lang.set(lang)
         LANG = LANG_DICT[lang]
-        Messagebox.show_info(
-            title=LANG['msg_info_title'],
-            message=LANG['change_language_msg']
-        )
+        ui_display_msg(self.root, LANG["change_language_msg"], 'info')
 
-    # 检查更新函数
     def check_update(self):
+        """检查更新函数"""
         current_version = self.root.title()
         self.bottom_update['stat'] = 'disabled'
-        message_title = LANG["msg_info_title"]
         latest_version = request_url(CHECK_UPDATE_URL)
 
         if latest_version is None:
-            message = LANG["check_update_error_msg"]
-            message_title = LANG["msg_error_title"]
+            ui_display_msg(self.root, LANG["check_update_error_msg"], 'error')
         elif latest_version != current_version:
-            message = LANG["check_update_info_1"].format(current_version, latest_version)
-        else:
-            message = LANG["check_update_info_2"].format(current_version, latest_version)
-
+            ui_display_msg(self.root, LANG["check_update_info_1"].format(current_version, latest_version), 'info')
+        elif latest_version == current_version:
+            ui_display_msg(self.root, LANG["check_update_info_2"].format(current_version, latest_version), 'info')
         self.bottom_update['stat'] = 'normal'
-        self.root.after(10, lambda: Messagebox.show_info(
-            title=message_title,
-            message=message
-        ))
 
-    # 附加功能函数
+    # noinspection PyShadowingNames
     def extra(self):
+        """附加功能函数"""
+        self.bottom_run.config(state='disabled')
+        self.bottom_run.config(text=LANG["extra_bottom_run_text"])
+        self.bottom_run.config(image=self.img_wait)
         logger.info(LANG["extra_info_start"].format("#" * 6, "#" * 6))
 
         try:
@@ -463,9 +466,7 @@ class BrutalityExtractor:
             is_empty = self.var_mpty.get()
 
             if not path_dest or not Path(path_dest).exists():
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_info_title'],
-                    message=LANG["extra_path_dest_warning_msg"]))
+                ui_display_msg(self.root, LANG["extra_path_dest_warning_msg"], 'warning')
                 logger.warning(LANG["extra_path_dest_warning_msg"])
                 return None
 
@@ -496,7 +497,6 @@ class BrutalityExtractor:
                 logger.debug(LANG["extra_debug_del_list"].format(list_to_str(del_list)))
 
             return True
-
         except Exception as e:
             logger.error("Error during deletion process: {}".format("#" * 6, e, "#" * 6))
             return None
@@ -504,51 +504,41 @@ class BrutalityExtractor:
             logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))
 
     # 主函数
+    # noinspection PyShadowingNames
     def main(self):
+        self.text_logs.delete(1.0, END)
         try:
-            self.text_logs.delete(1.0, END)
-
-            # 执行附加功能
-            is_extra = self.var_extr.get()
-            if is_extra:
-                self.bottom_run.config(state='disabled')
-                self.bottom_run.config(text=LANG["extra_bottom_run_text"])
-                self.bottom_run.config(image=self.img_wait)
-
+            if self.var_extr.get():
                 self.extra()
                 return
 
             logger.info(LANG["main_info_start"].format("#" * 6, "#" * 6))
 
-            # 切换按钮类型
+            # 变换按钮类型
             var_prog = ttk.IntVar()
             self.bottom_run = ttk.Progressbar(self.frame_bottom, orient="horizontal", mode="determinate", variable=var_prog, bootstyle="success")
             self.bottom_run.grid(row=0, column=6, sticky='WENS')
 
             # 检查解压目录是否正确
             path_zip = self.entry_path.get().strip()
-            if not path_zip or not Path(path_zip).exists():
+            if not path_zip and not Path(path_zip).exists():
                 logger.warning(LANG["main_no_path_zip_warning"].format("#" * 6, "#" * 6))
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_info_title'],
-                    message=LANG["main_no_path_zip_warning_msg"]))
+                ui_display_msg(self.root, LANG["main_no_path_zip_warning_msg"], 'warning')
                 return
 
-            # 获取目标目录下的所有文件路径列表，检查是否有文件
+            # 获取到目标目录下的所有文件路径列表，检查是否有文件
             file_paths = get_file_paths(path_zip)
             if not file_paths:
                 logger.warning(LANG["main_no_file_warning"].format("#" * 6, path_zip, "#" * 6))
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_info_title'],
-                    message=LANG["main_no_file_warning_msg"].format(path_zip)))
+                ui_display_msg(self.root, LANG["main_no_file_warning_msg"].format(path_zip), 'warning')
                 return
 
             # 对文件路径列表按解压目标进行初步分组
             path_groups = group_file_paths(file_paths)
 
-            # 生成全文件分组列表，替换掉目标目录
-            disk_free = psutil.disk_usage(Path(path_zip).anchor).free
+            # 生成全文件分组列表，获取空闲磁盘，看条件替换目标目录
             full_infos = group_list_by_lens(path_groups)
+            disk_free = psutil.disk_usage(Path(path_zip).anchor).free
             path_dest = self.entry_dest.get().strip()
             if path_dest:
                 path_dest = Path(path_dest)
@@ -556,9 +546,7 @@ class BrutalityExtractor:
                     path_dest.mkdir(parents=True, exist_ok=True)
                 except Exception as e:
                     logger.error(LANG["main_path_dest_error"].format("#" * 6, path_dest, e))
-                    self.root.after(10, lambda: Messagebox.show_error(
-                        title=LANG['msg_error_title'],
-                        message=LANG["main_path_dest_error_msg"].format(path_dest)))
+                    ui_display_msg(self.root, LANG["main_path_dest_error_msg"].format(path_dest), 'error')
                     return
                 full_infos = [{**file_info, 'target_path': str(path_dest / Path(*Path(file_info['target_path']).parts[len(Path(path_zip).parts):]))} for file_info in full_infos]
                 disk_free = psutil.disk_usage(Path(path_dest).anchor).free
@@ -567,55 +555,37 @@ class BrutalityExtractor:
             file_infos = group_files_main(full_infos, path_zip, path_dest)
             if not file_infos:
                 logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_info_title'],
-                    message=LANG["main_no_file_infos_warning_msg"].format(path_zip)))
+                ui_display_msg(self.root, LANG["main_no_file_infos_warning_msg"].format(path_zip), 'warning')
                 return
 
             # 计算变量
             file_size = sum(get_target_size(p) for i in file_infos for p in i['file_list'])
             file_size_format = format_size(file_size)
             file_in_total_number = len(file_infos)
+            failed_counts = 0
+            finished_counts = 0
+            is_delete = self.var_sdlt.get()
             self.bottom_run.configure(maximum=file_in_total_number)
-            parallel = min(file_in_total_number, int(self.var_para.get()), round(cpu_count() / 2) if cpu_count() > 3 else 1)
 
-            # 磁盘空间低警告
+            # 磁盘剩余空间低警告
             no_warnning = self.var_warn.get()
             if disk_free < file_size and not no_warnning:
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_warning_title'],
-                    message=LANG["disk_free_warning"]))
+                ui_display_msg(self.root, LANG["disk_free_warning"], 'warning')
                 return
 
             # CPU 负载高警告
             cpu_usage = psutil.cpu_percent(interval=1)
-            if cpu_usage > 50 and not no_warnning:
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_warning_title'],
-                    message=LANG["cpu_usage_warning"]))
+            if cpu_usage > CPU_LIMIT and not no_warnning:
+                ui_display_msg(self.root, LANG["cpu_usage_warning"], 'warning')
                 return
 
             # 内存使用率高警告
             memory_usage = psutil.virtual_memory().percent
-            if memory_usage > 70 and not no_warnning:
-                self.root.after(10, lambda: Messagebox.show_warning(
-                    title=LANG['msg_warning_title'],
-                    message=LANG["memory_usage_warning"]))
+            if memory_usage > MEMORY_LIMIT and not no_warnning:
+                ui_display_msg(self.root, LANG["memory_usage_warning"], 'warning')
                 return
 
-            # 更新进度条
-            def update_progress(total):
-                value = var_prog.get()
-                if value < total:
-                    value += 1
-                    var_prog.set(value)
-                    self.bottom_run["value"] = value
-
             # 解压后操作
-            failed_counts = 0
-            finished_counts = 0
-            is_delete = self.var_sdlt.get()
-
             def post_action(result):
                 nonlocal failed_counts
                 nonlocal finished_counts
@@ -646,13 +616,13 @@ class BrutalityExtractor:
                     del_list = [remove_target(result['file_info']['target_path'])]
                     failed_counts += 1
                     self.text_logs.insert(END, ERROR_CODE[return_code] + '\n', "red")
-
                 logger.debug(LANG["extra_debug_del_list"].format(list_to_str(del_list)))
-                update_progress(file_in_total_number)
+                self.update_progress(file_in_total_number, var_prog)
 
             # 多进程解压
             start_time = time.time()
             password_list = set(read_file_to_list(self.entry_pass.get()) if Path(self.entry_pass.get()).is_file() else [self.entry_pass.get()])
+            parallel = min(file_in_total_number, int(self.var_para.get()), round(cpu_count() / 2) if cpu_count() > 3 else 1)
 
             with Pool(processes=parallel) as process_pool:
                 for file_info in file_infos:
@@ -663,14 +633,12 @@ class BrutalityExtractor:
             elapsed_time = round(time.time() - start_time, 2)
             your_speed = calculate_transfer_speed(file_size, elapsed_time)
             logger.info(LANG["main_info_done"].format('#' * 6, '#' * 6, file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed))
-            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_info_title"],
-                                                      message=LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time,
-                                                                                                your_speed)))
+            ui_display_msg(self.root, LANG["main_info_done_msg"].format(file_in_total_number, failed_counts, finished_counts, file_size_format, parallel, elapsed_time, your_speed), 'info')
 
         # 故障处理
         except Exception as e:
             logger.error(LANG["main_error"].format('#' * 6, '#' * 6, e))
-            self.root.after(10, lambda: Messagebox.ok(title=LANG["msg_error_title"], message=LANG["main_error_msg"]))
+            ui_display_msg(self.root, LANG["main_error_msg"], 'error')
 
         # 恢复按钮状态
         finally:

@@ -1,12 +1,12 @@
-from pathlib import Path
 import configparser
-from typing import Dict, Union
-from filelock import FileLock
 import logging
+from pathlib import Path
 
-from modules.module_use import config_read, config_write, config_get
+from filelock import FileLock
+
 from modules.configs.lang_dict import LANG_DICT
 from modules.configs.settings import *
+from modules.module_use import config_read, config_get
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,6 @@ with lock:
             CP.write(configfile)
     except Exception as e:
         logger.error(f"An error occurred while writing to the configuration file: {e}")
-
 
 # 使用包装函数获取配置值
 path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)
@@ -76,4 +75,3 @@ LOG_CONFIG_DICT = {
     'max_log_size': log_size_config,
     'backup_count': log_count_config,
 }
-

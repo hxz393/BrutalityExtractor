@@ -1,6 +1,9 @@
-import ttkbootstrap as ttk
 from typing import Optional
 
+import ttkbootstrap as ttk
+
+
+# noinspection PyUnusedLocal,PyArgumentList
 class ToolTip:
     def __init__(self, widget: ttk.widgets, text: str, switch: ttk.Variable) -> None:
         """

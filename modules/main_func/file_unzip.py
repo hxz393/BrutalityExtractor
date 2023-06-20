@@ -1,11 +1,10 @@
+import logging
+import os
 import re
 import subprocess
-import os
-from pathlib import Path
-from typing import Set, Dict, Union, Optional
-import logging
+from typing import Set, Dict, Union
 
-from file_ops import get_target_size, get_resource_path
+from modules.file_ops import get_target_size, get_resource_path
 
 logger = logging.getLogger(__name__)
 BIN_7Z_PATH = get_resource_path('bin/7z.exe')
@@ -71,7 +70,8 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
             return result_data
         elif result.returncode == 2 and re.search(r"Missing volume :", result.stderr):
             result_data['code'] = 5
-            logger.warning(f'Decompression Failed : {main_file}, missing volume: {re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None}')
+            logger.warning(
+                f'Decompression Failed : {main_file}, missing volume: {re.search(r"Missing volume : (.*)", result.stderr).group(1) if re.search(r"Missing volume : (.*)", result.stderr) else None}')
             return result_data
         elif result.returncode == 2 and re.search(r"CRC Failed|CRC Error", result.stderr):
             result_data['code'] = 6

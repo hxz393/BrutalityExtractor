@@ -190,7 +190,7 @@ LANG_DICT = {
 		"main_no_file_warning": "{}扫描完毕。目录 {} 下没有文件{}",
 		"main_no_file_warning_msg": "目录 {} 下没有文件",
 		"main_path_dest_error": "{}运行错误。目标目录 {} 创建失败：{}",
-		"main_path_dest_error_msg": "运行错误，目标目录 {} 创建失败。目录名请勿包含禁止的特殊字符",
+		"main_path_dest_error_msg": "目标目录 {} 创建失败。目录名请勿包含禁止的特殊字符",
 		"main_no_file_infos_warning": "{}扫描完毕。目录 {} 下没有压缩文件{}",
 		"main_no_file_infos_warning_msg": "目录 {} 下没有压缩文件",
 		"disk_free_warning": "目前磁盘剩余空间小于压缩文件大小，继续执行可能导致：\n系统异常、解压失败、其他程序异常等未知错误\n\n打开忽略警告，可以跳过磁盘空间检查",

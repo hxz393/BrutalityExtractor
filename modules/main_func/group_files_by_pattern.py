@@ -1,9 +1,10 @@
+import logging
 import os
 import re
 from typing import List, Dict, Optional
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 def group_files_by_pattern(target_groups: Dict[str, List[str]]) -> Optional[List[Dict[str, List[str]]]]:
     """

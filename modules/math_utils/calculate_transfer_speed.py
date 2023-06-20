@@ -1,5 +1,5 @@
-from typing import Union, Optional
 import logging
+from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
 

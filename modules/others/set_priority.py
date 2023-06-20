@@ -1,9 +1,11 @@
-import os
-import psutil
-from typing import Optional
 import logging
+import os
+from typing import Optional
+
+import psutil
 
 logger = logging.getLogger(__name__)
+
 
 def set_priority(pid: Optional[int] = None, priority: int = psutil.REALTIME_PRIORITY_CLASS) -> Optional[bool]:
     """

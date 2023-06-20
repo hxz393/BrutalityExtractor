@@ -1,16 +1,16 @@
-from tkinter import EW, LEFT, BOTH, RIGHT, NSEW
 import logging
-from typing import Optional
+from tkinter import EW, LEFT, BOTH, RIGHT, NSEW
 
 import ttkbootstrap as ttk
 from tkfontawesome import icon_to_image
 from ttkbootstrap import PRIMARY, Bootstyle, INVERSE
 
-from modules import ICO_SIZE, FONT_SIZE, mini_skin_config
+from modules.configs import ICO_SIZE, FONT_SIZE, mini_skin_config
 
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyArgumentList,PyUnresolvedReferences
 class CollapsingFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         """
@@ -119,4 +119,3 @@ class CollapsingFrame(ttk.Frame):
             self.master.geometry(f"{self.master.winfo_width()}x{new_height}")
         except Exception as e:
             logger.error(f"An error occurred while updating the frame size: {e}")
-

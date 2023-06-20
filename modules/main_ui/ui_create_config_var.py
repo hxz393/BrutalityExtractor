@@ -1,4 +1,3 @@
-import os
 from typing import Any, Union
 from functools import partial
 import logging
@@ -9,6 +8,7 @@ from modules.main_ui import ui_on_option_change
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyTypeChecker
 def ui_create_config_var(value: Any, config_key: str) -> Union[ttk.StringVar, ttk.DoubleVar, ttk.IntVar, None]:
     """
     创建配置变量，并添加值改变时的追踪回调函数。
