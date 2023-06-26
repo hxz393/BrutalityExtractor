@@ -13,12 +13,9 @@ logger = logging.getLogger(__name__)
 lock = FileLock("config.lock")
 
 with lock:
-    CP = configparser.ConfigParser()
     # 如果配置文件存在，读取配置文件
-    if Path(CONFIG_PATH).exists():
-        CP = config_read(CONFIG_PATH)
-    else:
-        logger.error(f"Configuration file does not exist: {CONFIG_PATH}")
+    CP = config_read(CONFIG_PATH) if Path(CONFIG_PATH).exists() else None
+    CP = CP if CP else configparser.ConfigParser()
 
     # 先更新 "DEFAULT" section，不论是否已经存在
     CP.read_dict(DEFAULT_CONFIG)
@@ -41,6 +38,7 @@ password_config = config_get(CP, 'main', 'password', CP.get)
 parallel_config = config_get(CP, 'main', 'parallel', CP.getint)
 no_warnning_config = config_get(CP, 'main', 'no_warnning', CP.getint)
 is_delete_config = config_get(CP, 'main', 'is_delete', CP.getint)
+is_force_config = config_get(CP, 'main', 'is_force', CP.getint)
 log_level_config = config_get(CP, 'main', 'log_level', CP.get)
 log_size_config = config_get(CP, 'main', 'log_size', CP.getint)
 log_count_config = config_get(CP, 'main', 'log_count', CP.getint)

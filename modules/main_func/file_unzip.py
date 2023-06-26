@@ -24,13 +24,16 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
     """
     target_path = file_info['target_path']
     main_file = file_info['main_file']
+    base_name = os.path.splitext(main_file)[0]+'.betmp'
+    os.rename(main_file, base_name)
+
     result_data = {'code': -1, 'file_info': file_info}
 
     if not password_set:
         password_set = {''}
 
     for passwd in password_set:
-        unzip_command = [BIN_7Z_PATH, 'x', '-aoa', f'-o{target_path}', f'-p{passwd}', f'--', f'{main_file}']
+        unzip_command = [BIN_7Z_PATH, 'x', '-aoa', f'-o{target_path}', f'-p{passwd}', f'--', f'{base_name}']
 
         try:
             if os.name == 'nt':
@@ -43,6 +46,8 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
             result_data['code'] = -1
             logger.warning(f"Command execution failed: {unzip_command}, Error message: {e}")
             return result_data
+        finally:
+            os.rename(base_name, main_file)
 
         logger.debug(f"Command: {unzip_command}\nOutput:\n{result.stdout.strip()}")
 
@@ -56,7 +61,7 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
                 result_data['code'] = 1
                 logger.warning(f"Decompression Failed : {main_file}, target size mismatch")
                 return result_data
-        elif result.returncode == 2 and re.search(r"Wrong password", result.stderr):
+        elif result.returncode == 2 and re.search(r"Cannot open encrypted archive. Wrong password", result.stderr):
             result_data['code'] = 2
             logger.debug(f"Decompression Failed : {main_file}, wrong password: {passwd}")
             continue

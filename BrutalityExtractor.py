@@ -19,8 +19,8 @@ logging_config(**LOG_CONFIG_DICT)
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
-    版本：1.1.0\n
-    更新时间：2023.06.20\n
+    版本：1.2.0\n
+    更新时间：2023.06.28\n
     打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
     UI 文档：https://ttkbootstrap.readthedocs.io/en/latest/zh/\n
@@ -31,12 +31,14 @@ class BrutalityExtractor:
         # 主窗口配置
         self.root = ttk.Window()
         self.style = ttk.Style(theme=theme_config)
-        self.root.title("BrutalityExtractor v1.1.0")
+        self.root.title("BrutalityExtractor v1.2.0")
         self.root.attributes("-alpha", alpha_config)
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
         self.root.minsize(550, 1)
         self.root.iconbitmap(convert_base64_to_ico(MAIN_ICO))
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.process_pool = None
 
         cf = CollapsingFrame(self.root)
         cf.pack(fill=BOTH)
@@ -132,7 +134,7 @@ class BrutalityExtractor:
         self.label_warn = ttk.Label(self.advance_area_fr2, text=LANG["label_warn_text"])
         self.label_warn.pack(side=ttk.LEFT)
 
-        self.checkbutton_warn = ttk.Checkbutton(self.advance_area_fr2, bootstyle="warning-square-toggle", variable=self.var_warn, onvalue=1, offvalue=0)
+        self.checkbutton_warn = ttk.Checkbutton(self.advance_area_fr2, bootstyle="success-square-toggle", variable=self.var_warn, onvalue=1, offvalue=0)
         self.checkbutton_warn.pack(side=ttk.LEFT)
 
         ToolTip(self.label_warn, LANG["tooltip_label_warn"], self.var_ntlp)
@@ -147,6 +149,17 @@ class BrutalityExtractor:
         self.checkbutton_sdlt.pack(side=ttk.LEFT)
 
         ToolTip(self.label_sdlt, LANG["tooltip_label_sdlt"], self.var_ntlp)
+
+        # 强制模式相关元素
+        self.var_sfrc = ui_create_config_var(is_force_config, 'is_force')
+
+        self.label_sfrc = ttk.Label(self.advance_area_fr2, text=LANG["label_sfrc_text"])
+        self.label_sfrc.pack(side=ttk.LEFT, padx=(10, 0))
+
+        self.checkbutton_sfrc = ttk.Checkbutton(self.advance_area_fr2, bootstyle="warning-square-toggle", variable=self.var_sfrc, onvalue=1, offvalue=0)
+        self.checkbutton_sfrc.pack(side=ttk.LEFT)
+
+        ToolTip(self.label_sfrc, LANG["tooltip_label_sfrc"], self.var_ntlp)
 
         # 变换布局行3
         self.advance_area_fr3 = ttk.Frame(self.advance_area)
@@ -552,7 +565,8 @@ class BrutalityExtractor:
                 disk_free = psutil.disk_usage(Path(path_dest).anchor).free
 
             # 筛选出压缩文件分组列表，检查是否有压缩文件
-            file_infos = group_files_main(full_infos, path_zip, path_dest)
+            is_force = self.var_sfrc.get()
+            file_infos = group_files_main(full_infos, path_zip, path_dest, is_force)
             if not file_infos:
                 logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
                 ui_display_msg(self.root, LANG["main_no_file_infos_warning_msg"].format(path_zip), 'warning')
@@ -621,14 +635,15 @@ class BrutalityExtractor:
 
             # 多进程解压
             start_time = time.time()
-            password_list = set(read_file_to_list(self.entry_pass.get()) if Path(self.entry_pass.get()).is_file() else [self.entry_pass.get()])
+            password_list = read_file_to_list(self.entry_pass.get()) if Path(self.entry_pass.get()).is_file() else [self.entry_pass.get()]
+            password_list = set(password_list) if password_list else ()
             parallel = min(file_in_total_number, int(self.var_para.get()), round(cpu_count() / 2) if cpu_count() > 3 else 1)
 
-            with Pool(processes=parallel) as process_pool:
+            with Pool(processes=parallel) as self.process_pool:
                 for file_info in file_infos:
-                    process_pool.apply_async(file_unzip, args=(file_info, password_list), callback=post_action)
-                process_pool.close()
-                process_pool.join()
+                    self.process_pool.apply_async(file_unzip, args=(file_info, password_list), callback=post_action)
+                self.process_pool.close()
+                self.process_pool.join()
 
             elapsed_time = round(time.time() - start_time, 2)
             your_speed = calculate_transfer_speed(file_size, elapsed_time)
@@ -649,6 +664,12 @@ class BrutalityExtractor:
     # 启动Tkinter
     def run(self):
         self.root.mainloop()
+
+    def on_closing(self):
+        if self.process_pool is not None:
+            self.process_pool.terminate()
+            self.process_pool.join()
+        self.root.destroy()
 
 
 if __name__ == '__main__':

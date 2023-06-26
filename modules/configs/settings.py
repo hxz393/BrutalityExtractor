@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
         'parallel': '1',
         'no_warnning': '0',
         'is_delete': '0',
+        'is_force': '0',
         'log_level': 'INFO',
         'log_size': '10',
         'log_count': '10',
