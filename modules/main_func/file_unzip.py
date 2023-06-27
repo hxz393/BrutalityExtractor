@@ -24,16 +24,13 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
     """
     target_path = file_info['target_path']
     main_file = file_info['main_file']
-    base_name = os.path.splitext(main_file)[0]+'.betmp'
-    os.rename(main_file, base_name)
-
     result_data = {'code': -1, 'file_info': file_info}
 
     if not password_set:
         password_set = {''}
 
     for passwd in password_set:
-        unzip_command = [BIN_7Z_PATH, 'x', '-aoa', f'-o{target_path}', f'-p{passwd}', f'--', f'{base_name}']
+        unzip_command = [BIN_7Z_PATH, 'x', '-aoa', f'-o{target_path}', f'-p{passwd}', f'--', f'{main_file}']
 
         try:
             if os.name == 'nt':
@@ -46,10 +43,8 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
             result_data['code'] = -1
             logger.warning(f"Command execution failed: {unzip_command}, Error message: {e}")
             return result_data
-        finally:
-            os.rename(base_name, main_file)
 
-        logger.debug(f"Command: {unzip_command}\nOutput:\n{result.stdout.strip()}")
+        logger.debug(f"Command: {unzip_command}\nOutput:\n{result.stdout.strip()}\n{result.stderr.strip()}")
 
         if result.returncode == 0:
             info_size = int(re.search(r"Size:\s+(\d+)", result.stdout).group(1)) if re.search(r"Size:\s+(\d+)", result.stdout) else 0
