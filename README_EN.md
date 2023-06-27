@@ -130,10 +130,10 @@ This software adopts the [GPL-3.0 license](https://github.com/hxz393/BrutalityEx
 
 Third-party open source libraries used:
 
-- Decompression core: 7z-22.01
-- File recognition: magic-0.4.14
-- Theme beautification: ttkbootstrap-1.10.1
-- Icon generation: tkfontawesome-0.2.0
+- Decompression core: [7z](https://www.7-zip.org/)
+- File recognition: [magic](https://github.com/ahupp/python-magic)
+- Theme beautification: [ttkbootstrap](https://github.com/israel-dryer/ttkbootstrap)
+- Icon generation: [tkfontawesome](https://github.com/israel-dryer/TkFontAwesome)
 
 
 
@@ -173,7 +173,7 @@ Settings in the advanced configuration need to be adjusted according to actual c
 
 - **Processes**
 
-  Set the number of decompression processes to run at the same time. As decompression operations occupy a lot of processor, memory, and hard disk resources, it's recommended not to open other software during operation to ensure smooth decompression.
+  Set the number of decompression processes to run at the same time. 
 
 - **Ignore Warnings**
 
@@ -183,6 +183,10 @@ Settings in the advanced configuration need to be adjusted according to actual c
 
   Delete the compressed file after decompression success. Whether it is turned on or not, the original compressed file will not be deleted if decompression fails.
 
+- **Force Mode**
+
+  Skip file type identification, attempt to decompress all files in the directory.
+  
 - **Log-related**
 
   Controls the configuration of writing to local log files. The software needs to be restarted to apply the changes.
@@ -267,16 +271,6 @@ BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 
 When the software encounters errors during operation, first check the common problems and solutions summarized below. Then check whether there are the same problems in all [Issues](https://github.com/hxz393/BrutalityExtractor/issues). If it doesn't help, you can submit a new [Issue](https://github.com/hxz393/BrutalityExtractor/issues) and attach the relevant log files.
 
-## Startup error `'NoneType' object has no attribute 'read_dict'`
-
-After downloading the new version and overwriting the original executable file, an error occurred upon startup.
-
-**Cause**: The new version has significant changes and is not compatible with the configuration file of the old version.
-
-**Solution**: Delete the `config` folder at the location where the software is placed, and re-run to initialize the configuration file.
-
-
-
 ## The window is not normal after maximizing
 
 The collapse and expansion do not automatically adapt to the window height in full-screen mode.
@@ -300,6 +294,19 @@ No. Please try professional software, such as `everything`, `PowerToys`, and oth
 # Update Logs
 
 To avoid too long update logs, only the most recent update log is retained.
+
+## Version 1.2.0 (2023.06.28)
+
+Improvements:
+
+1. Added a force mode switch, removing file type restrictions;
+2. Updated 7z core program to version 23.1.
+
+Bug fixes:
+
+1. Fixed the issue of sub-processes remaining in the system when exiting the window.
+
+
 
 ## Version 1.1.0 (2023.06.20)
 

@@ -94,7 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', default=None, required=True, help='directory with zip files')
     parser.add_argument('-p', default='', help='password or text with password (optional)')
     parser.add_argument('-c', default='1', help='set up your speed (optional)')
-    parser.add_argument('-v', '--version', action='version', version='BrutalityExtractor v1.1.0')
+    parser.add_argument('-v', '--version', action='version', version='BrutalityExtractor v1.2.0')
 
     args = parser.parse_args()
 
