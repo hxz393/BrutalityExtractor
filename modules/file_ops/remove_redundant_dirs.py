@@ -1,6 +1,6 @@
-import logging
 import os
 import uuid
+import logging
 from typing import List, Union, Optional
 
 logger = logging.getLogger(__name__)
@@ -29,26 +29,38 @@ def remove_redundant_dirs(target_path: Union[str, os.PathLike]) -> Optional[List
             logger.error(f"'{target_path}' is not a valid directory.")
             return None
 
-        for subdir in os.scandir(target_path):
-            if subdir.is_dir():
-                subdir_path = subdir.path
-                sub_subdirs = [entry for entry in os.scandir(subdir_path) if entry.is_dir()]
+        dirs_to_process = [target_path]
 
-                if len(sub_subdirs) == 1 and sub_subdirs[0].name == os.path.basename(subdir_path):
-                    sub_subdir_path = sub_subdirs[0].path
-                    parent_files = [entry for entry in os.scandir(subdir_path) if entry.is_file()]
+        while dirs_to_process:
+            current_dir = dirs_to_process.pop()
 
-                    if not parent_files:
-                        temp_dir = os.path.join(subdir_path, f"{os.path.basename(sub_subdir_path)}_{uuid.uuid4()}")
-                        os.rename(sub_subdir_path, temp_dir)
+            for subdir in os.scandir(current_dir):
+                if not subdir.is_dir():
+                    continue
 
-                        for item in os.scandir(temp_dir):
-                            os.rename(item.path, os.path.join(subdir_path, item.name))
+                dirs_to_process.append(subdir.path)
 
-                        if not any(os.scandir(temp_dir)):
-                            os.rmdir(temp_dir)
+                sub_subdirs = [entry for entry in os.scandir(subdir.path) if entry.is_dir()]
 
-                        removed_dirs.append(os.path.normpath(sub_subdir_path))
+                if len(sub_subdirs) != 1 or sub_subdirs[0].name != os.path.basename(subdir.path):
+                    continue
+
+                sub_subdir_path = sub_subdirs[0].path
+                parent_files = [entry for entry in os.scandir(subdir.path) if entry.is_file()]
+
+                if parent_files:
+                    continue
+
+                temp_dir = os.path.join(subdir.path, f"{os.path.basename(sub_subdir_path)}_{uuid.uuid4()}")
+                os.rename(sub_subdir_path, temp_dir)
+
+                for item in os.scandir(temp_dir):
+                    os.rename(item.path, os.path.join(subdir.path, item.name))
+
+                if not any(os.scandir(temp_dir)):
+                    os.rmdir(temp_dir)
+
+                removed_dirs.append(os.path.normpath(sub_subdir_path))
     except Exception as e:
         logger.error(f"An error occurred while removing redundant directories: {e}")
         return None

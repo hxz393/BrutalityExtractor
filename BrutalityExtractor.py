@@ -19,7 +19,7 @@ logging_config(**LOG_CONFIG_DICT)
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
-    版本：1.2.0\n
+    版本：1.2.1\n
     更新时间：2023.06.28\n
     打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
@@ -31,7 +31,7 @@ class BrutalityExtractor:
         # 主窗口配置
         self.root = ttk.Window()
         self.style = ttk.Style(theme=theme_config)
-        self.root.title("BrutalityExtractor v1.2.0")
+        self.root.title("BrutalityExtractor v1.2.1")
         self.root.attributes("-alpha", alpha_config)
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
