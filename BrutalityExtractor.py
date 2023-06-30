@@ -455,7 +455,7 @@ class BrutalityExtractor:
         self.bottom_update['stat'] = 'disabled'
         latest_version = request_url(CHECK_UPDATE_URL)
 
-        if latest_version is None:
+        if bool(latest_version) is False:
             ui_display_msg(self.root, LANG["check_update_error_msg"], 'error')
         elif latest_version != current_version:
             ui_display_msg(self.root, LANG["check_update_info_1"].format(current_version, latest_version), 'info')
