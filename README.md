@@ -71,7 +71,7 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 软件下载方式：
 
 - 方式一：到 [release](https://github.com/hxz393/BrutalityExtractor/releases) 页面下载最新版的可执行文件，文件名为 `BrutalityExtractor.exe` 或 `BrutalityExtractorCli.exe` ，下载完毕可直接打开使用。
-- 方式二：[百度网盘](https://pan.baidu.com/s/1LiL_Kvwcjsl44UvJxJIUTg?pwd=6666)分流下载。
+- 方式二：[百度网盘](https://pan.baidu.com/s/1RK7uBqaqgqJHLJbadXI48g?pwd=6666)分流下载。
 - 方式三：[直连](https://www.x2b.net/download/BrutalityExtractor.7z)下载。
 
 下载的压缩包，需要解压缩后运行可执行文件，否则配置将不会保存。
