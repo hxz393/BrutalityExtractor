@@ -2,13 +2,13 @@
 
 # Introduction
 
-BrutalityExtractor is a multi-process unzipping software designed for high-performance systems. Optimized for modern multi-core processors and high-speed solid-state drives, its batch decompression speed is more than 5 times higher than that of common decompression software, fully utilizing the performance of computer hardware.
+BrutalityExtractor is a multiprocess unzipping software designed for high-performance systems. Optimized for modern multicore processors and high-speed solid-state drives, its batch decompression speed is more than 5 times higher than that of common decompression software, fully utilizing the performance of computer hardware.
 
 Features:
 
 - Batch decompression: Automatically scans and decompresses all compressed files in the specified directory, even if the file extension is incorrect.
 - Supports multiple formats: Supports common compression file formats `7z`, `zip`, `rar`, `tar`, `gz`, `xz`, `bz2` and can properly handle split compressed files.
-- Supports multi-processing: Customize the number of decompression processes based on the processor thread count, doubling the decompression speed.
+- Supports multiprocessing: Customize the number of decompression processes based on the processor thread count, doubling the decompression speed.
 - Supports password lists: You can set a list of common passwords to automatically match encrypted compressed files.
 - Additional features: Includes useful functions such as removing directory redundancy, deleting empty directories, and deleting junk files.
 
@@ -19,8 +19,6 @@ Screenshot:
 Command-Line:
 
 ![command-line screenshot](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/cli-en.jpg)
-
-
 
 ## System Requirements
 
@@ -58,13 +56,11 @@ Using a solid-state drive with a `PCI-E 3.0 x4` or higher interface is still bei
 
 A general table of hard disk specifications and corresponding process numbers is as follows:
 
-| Hard Disk         | Process | Description                                                  |
-| ----------------- | ------- | ------------------------------------------------------------ |
-| HDD SATA 3.0 18TB | 2       | High-performance HDD with R/W speed over 200MB/s, barely sufficient to run 2 processes |
-| SSD SATA 3.0 4TB  | 4       | High-performance SATA SSD, with maximum R/W speed of 500MB/s, can run 4 processes |
+| Hard Disk         | Process | Description                                                                                                                                  |
+|-------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| HDD SATA 3.0 18TB | 2       | High-performance HDD with R/W speed over 200MB/s, barely sufficient to run 2 processes                                                       |
+| SSD SATA 3.0 4TB  | 4       | High-performance SATA SSD, with maximum R/W speed of 500MB/s, can run 4 processes                                                            |
 | SSD PCI-E 1TB     | 8~64    | Common m.2 SSD, usually having a R/W speed over 1GB/s, with great performance variation. Adjust process number according to actual situation |
-
-
 
 ## Download Links
 
@@ -75,11 +71,9 @@ Software download methods:
 
 The downloaded compressed file needs to be decompressed before running the executable file, otherwise the configs will not be saved.
 
-
-
 ## Self-packaging
 
-Manual compilation requires pre-installed `Python 3.10` or higher and the `pyinstaller` lib. Install other dependencies as needed, always using the latest version.
+Manual compilation requires to be pre-installed `Python 3.10` or higher and the `pyinstaller` lib. Install other dependencies as needed, always using the latest version.
 
 Compilation steps are as follows:
 
@@ -122,8 +116,6 @@ Compilation steps are as follows:
 
    If the process is error-free, the executable file will be generated in the `dist` directory.
 
-
-
 ## Open Source License
 
 This software adopts the [GPL-3.0 license](https://github.com/hxz393/BrutalityExtractor/blob/main/LICENSE) for open-source authorization agreement. If the basic norms of the open-source community are violated, and the open-source project is used privately for commercial purposes, this will be considered an infringement act, and the author will pursue legal responsibility.
@@ -135,9 +127,7 @@ Third-party open source libraries used:
 - Theme beautification: [ttkbootstrap](https://github.com/israel-dryer/ttkbootstrap)
 - Icon generation: [tkfontawesome](https://github.com/israel-dryer/TkFontAwesome)
 
-
-
-# Useage
+# Usage
 
 When you first run the software, the interface will be in English due to the lack of a configuration file. You can expand the Appearance Settings and switch the language under Language. The software needs to be restarted to apply the changes.
 
@@ -165,15 +155,13 @@ Extraction Directory or Destination Directory is a mandatory field.
 
   To make sure the password is read correctly, please save the text using the `UTF-8` encoding format.
 
-
-
 ## Advanced Settings
 
 Settings in the advanced configuration need to be adjusted according to actual conditions.
 
 - **Processes**
 
-  Set the number of decompression processes to run at the same time. 
+  Set the number of decompression processes to run at the same time.
 
 - **Ignore Warnings**
 
@@ -186,12 +174,10 @@ Settings in the advanced configuration need to be adjusted according to actual c
 - **Force Mode**
 
   Skip file type identification, attempt to decompress all files in the directory.
-  
+
 - **Log-related**
 
   Controls the configuration of writing to local log files. The software needs to be restarted to apply the changes.
-
-
 
 ## Appearance Settings
 
@@ -217,8 +203,6 @@ There are some adjustable theme settings.
 
   Configure the transparency of the window.
 
-
-
 ## Additional Features
 
 Additional features exist independently of the decompression function and provide some common file operation functions.
@@ -238,8 +222,6 @@ Additional features exist independently of the decompression function and provid
 - **Delete Files (Directories)**
 
   Specified file or directory names will be directly deleted from the destination directory. Like the decryption password, it supports name lists file.
-
-
 
 ## Command Line Mode
 
@@ -265,8 +247,6 @@ Below is an example of use, specifying the decompression directory as `B:\Archiv
 BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 ```
 
-
-
 # FAQ
 
 When the software encounters errors during operation, first check the common problems and solutions summarized below. Then check whether there are the same problems in all [Issues](https://github.com/hxz393/BrutalityExtractor/issues). If it doesn't help, you can submit a new [Issue](https://github.com/hxz393/BrutalityExtractor/issues) and attach the relevant log files.
@@ -279,8 +259,6 @@ The collapse and expansion do not automatically adapt to the window height in fu
 
 **Solution**: Welcome to provide a solution.
 
-
-
 ## Add batch compression function
 
 No. Common compression software uses resources very well when compressing, please try `7z`, `PeaZip`, and other open-source free software.
@@ -288,8 +266,6 @@ No. Common compression software uses resources very well when compressing, pleas
 ## Add automatic renaming function
 
 No. Please try professional software, such as `everything`, `PowerToys`, and other excellent free software.
-
-
 
 # Update Logs
 
@@ -306,8 +282,6 @@ Bug fixes:
 
 1. Fixed the issue of sub-processes remaining in the system when exiting the window.
 
-
-
 ## Version 1.1.0 (2023.06.20)
 
 Improvements:
@@ -322,8 +296,6 @@ Bug Fixes:
 1. Fixed performance issues caused by the `pathlib` library, replaced it with the `os` library;
 2. Fixed a bug that caused accidental deletion of files under specific circumstances.
 
-
-
 ## Version 1.0.2 (2023.06.15)
 
 Improvements:
@@ -337,15 +309,11 @@ Bug fixes:
 2. Fixed the issue of decimal places in file sizes being ignored;
 3. Fixed some omitted text.
 
-
-
 ## Version 1.0.1 (2023.06.12)
 
 Fixes:
 
 1. When reading text, specify to use UTF-8 encoding.
-
-
 
 ## Version 1.0.0 (2023.06.11)
 

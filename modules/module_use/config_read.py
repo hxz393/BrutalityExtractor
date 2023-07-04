@@ -1,9 +1,10 @@
 import configparser
+import logging
 from pathlib import Path
 from typing import Optional, Union
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 def config_read(target_path: Union[str, Path]) -> Optional[configparser.ConfigParser]:
     """

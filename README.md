@@ -20,8 +20,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 
 ![命令行截图](https://raw.githubusercontent.com/hxz393/BrutalityExtractor/main/capture/cli-cn.jpg)
 
-
-
 ## 系统要求
 
 使用前请仔细阅读下面软件的使用限制。
@@ -58,13 +56,11 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 
 一个通用硬盘规格和进程数对应关系表如下：
 
-| 硬盘规格          | 进程数 | 说明                                                         |
-| ----------------- | ------ | ------------------------------------------------------------ |
-| HDD SATA 3.0 18TB | 2      | 高性能 HDD，读写速度超 200MB/s，勉强可开 2 个进程            |
-| SSD SATA 3.0 4TB  | 4      | 高性能 SATA 接口 SSD，读写速度最高 500MB/s，可开 4 个进程    |
-| SSD PCI-E 1TB     | 8~64   | 常见 m.2 接口 SSD，通常有 1GB/s 以上读写速度，性能差异极大。进程数根据实际情况调整 |
-
-
+| 硬盘规格              | 进程数  | 说明                                                |
+|-------------------|------|---------------------------------------------------|
+| HDD SATA 3.0 18TB | 2    | 高性能 HDD，读写速度超 200MB/s，勉强可开 2 个进程                  |
+| SSD SATA 3.0 4TB  | 4    | 高性能 SATA 接口 SSD，读写速度最高 500MB/s，可开 4 个进程           |
+| SSD PCI-E 1TB     | 8~64 | 常见 m.2 接口 SSD，通常有 1GB/s 以上读写速度，性能差异极大。进程数根据实际情况调整 |
 
 ## 下载地址
 
@@ -75,8 +71,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 - 方式三：[直连](https://www.x2b.net/download/BrutalityExtractor.7z)下载。
 
 下载的压缩包，需要解压缩后运行可执行文件，否则配置将不会保存。
-
-
 
 ## 自行打包
 
@@ -116,14 +110,12 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
    ```
 
    打包命令行模式脚本：
-   
+
    ```sh
    pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --console BrutalityExtractorCli.py
    ```
-   
+
    如果过程没有报错，可执行文件会生成到 `dist` 目录下面。
-
-
 
 ## 开源许可
 
@@ -135,8 +127,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 - 文件识别：[magic](https://github.com/ahupp/python-magic)
 - 主题美化：[ttkbootstrap](https://github.com/israel-dryer/ttkbootstrap)
 - 图标生成：[tkfontawesome](https://github.com/israel-dryer/TkFontAwesome)
-
-
 
 # 软件使用
 
@@ -166,8 +156,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 
   为了能正确读取特殊密码，密码文本文件请使用 `UTF-8` 编码格式储存。
 
-
-
 ## 高级配置
 
 高级配置中的设置需要根据实际情况来调整。
@@ -187,12 +175,10 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 - **强制模式**
 
   跳过文件类型识别，尝试对目录下所有文件进行解压。
-  
+
 - **日志相关**
 
   控制写入本地日志文件的配置，修改设置后需要重启软件来生效。
-
-
 
 ## 外观配置
 
@@ -218,8 +204,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 
   配置窗口透明度。
 
-
-
 ## 附加功能
 
 附加功能独立于解压功能存在，提供一些常用文件操作功能。
@@ -239,8 +223,6 @@ BrutalityExtractor 是一款专为高性能系统打造的多进程解压软件�
 - **删除垃圾**
 
   指定的文件或目录名，直接删除目标目录下找到的匹配目标。和解压密码一样，支持导入名称列表来批量删除。
-
-
 
 ## 命令行模式
 
@@ -266,8 +248,6 @@ BrutalityExtractorCli.exe [-h] -d D [-p P] [-c C] [-v]
 BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 ```
 
-
-
 # 常见问题
 
 软件运行遇见错误时，先查看下面总结的一些常见问题和解决方案。再查看所有 [Issue](https://github.com/hxz393/BrutalityExtractor/issues) 中是否有同样问题。如果都没有帮助，可以提交新 [Issue](https://github.com/hxz393/BrutalityExtractor/issues) ，并附上相关日志。
@@ -280,21 +260,16 @@ BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 
 **解决**：欢迎提供解决方案。
 
-
-
 ## 增加批量压缩功能
 
 不加入。常见压缩软件在压缩时资源利用率非常好，请尝试 `7z`、`PeaZip` 等开源免费软件。
-
-
 
 ## 增加自动改名功能
 
 不加入。请尝试专业的软件，例如：`everything`、`PowerToys` 等优秀免费软件。
 
-
-
 # 更新日志
+
 为避免更新日志过长，只保留最近更新日志。
 
 ## 版本 1.2.0（2023.06.28）
@@ -307,8 +282,6 @@ BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 修复内容：
 
 1. 修复窗口退出时，子进程在系统残留。
-
-
 
 ## 版本 1.1.0（2023.06.20）
 
@@ -324,8 +297,6 @@ BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 1. 修复 `pathlib` 库造成的性能问题，替换为 `os` 库；
 2. 修复一个特定情形下误删文件的 BUG。
 
-
-
 ## 版本 1.0.2（2023.06.15）
 
 改进内容：
@@ -339,15 +310,11 @@ BrutalityExtractorCli.exe -c 16 -d B:\Archive -p B:/pass.txt
 2. 修复文件大小显示的小数位被忽略；
 3. 修复部分遗漏文字。
 
-
-
 ## 版本 1.0.1（2023.06.12）
 
 修复内容：
 
 1. 添加读取文本时，指定使用 UTF-8 编码。
-
-
 
 ## 版本 1.0.0（2023.06.11）
 

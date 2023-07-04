@@ -46,7 +46,7 @@ class BrutalityExtractor:
         # 先定义关闭通知变量
         self.var_ntlp = ui_create_config_var(no_tooltip_config, 'no_tooltip')
 
-        ## 基础配置区域
+        # 基础配置区域
         self.basic_area = ttk.Frame(cf, padding=0)
         self.basic_area.columnconfigure(1, weight=1)
         self.img_basic_area = icon_to_image("cog", fill="#FFFFFF", scale_to_width=ICO_SIZE)
@@ -103,7 +103,7 @@ class BrutalityExtractor:
         ToolTip(self.label_pass, LANG["tooltip_label_pass"], self.var_ntlp)
         ToolTip(self.bottom_pass, LANG["tooltip_bottom_pass"], self.var_ntlp)
 
-        ## 高级配置区块
+        # 高级配置区块
         self.advance_area = ttk.Frame(cf, padding=0)
         # self.advance_area.columnconfigure(0, weight=1)
         self.img_advance_area = icon_to_image("cogs", fill="#FFFFFF", scale_to_width=ICO_SIZE)
@@ -207,7 +207,7 @@ class BrutalityExtractor:
 
         ToolTip(self.label_logc, LANG["tooltip_label_logc"], self.var_ntlp)
 
-        ## 外观配置区块
+        # 外观配置区块
         self.skin_area = ttk.Frame(cf, padding=0)
         # self.skin_area.columnconfigure(1, weight=1)
         # self.skin_area.rowconfigure(0, weight=1)
@@ -289,7 +289,7 @@ class BrutalityExtractor:
 
         ToolTip(self.label_alpha, LANG["tooltip_label_alpha"], self.var_ntlp)
 
-        ## 附加功能区块
+        # 附加功能区块
         self.extra_area = ttk.Frame(cf, padding=0)
         self.extra_area.columnconfigure(1, weight=1)
         self.extra_area.rowconfigure(0, weight=1)
@@ -359,7 +359,7 @@ class BrutalityExtractor:
         ToolTip(self.label_xclf, LANG["tooltip_label_xclf"], self.var_ntlp)
         ToolTip(self.bottom_xclf, LANG["tooltip_bottom_xclf"], self.var_ntlp)
 
-        ## 显示日志区块
+        # 显示日志区块
         self.log_area = ttk.Frame(cf, padding=0)
         # self.log_area.columnconfigure(0, weight=1)
         self.img_log_area = icon_to_image("outdent", fill="#FFFFFF", scale_to_width=ICO_SIZE)
@@ -383,7 +383,7 @@ class BrutalityExtractor:
 
         ui_create_right_click_menu(self.text_logs)
 
-        ## 各种按钮区块
+        # 各种按钮区块
         self.frame_bottom = ttk.Frame(self.root, bootstyle="light")
         self.frame_bottom.pack(fill='x')
         self.frame_bottom.columnconfigure(6, weight=200)
@@ -391,7 +391,7 @@ class BrutalityExtractor:
         # 项目主页相关元素
         self.img_github = icon_to_image("github", fill="#008cba", scale_to_height=ICO_SIZE)
         self.bottom_github = ttk.Button(self.frame_bottom, text=LANG["bottom_github_text"], image=self.img_github, bootstyle="light-outline", cursor='heart',
-                                        command=lambda: webbrowser.open("https://github.com/hxz393/BrutalityExtractor", new=0))
+                                        command=lambda: webbrowser.open("https://github.com/hxz393/BrutalityExtractor"))
         self.bottom_github.grid(row=0, column=0, sticky='E')
         ToolTip(self.bottom_github, LANG["bottom_github_text"], self.var_ntlp)
 

@@ -1,10 +1,12 @@
 import logging
 from typing import Union
+
 import ttkbootstrap as ttk
 
 from modules.configs import LANG
 
 logger = logging.getLogger(__name__)
+
 
 def ui_create_right_click_menu(widget: Union[ttk.Entry, ttk.Text]) -> None:
     """
@@ -19,7 +21,7 @@ def ui_create_right_click_menu(widget: Union[ttk.Entry, ttk.Text]) -> None:
     def create_menu(event) -> None:
         """创建右键菜单并显示。"""
         try:
-            right_click_menu = ttk.Menu(None, tearoff=1, takefocus=0)
+            right_click_menu = ttk.Menu(tearoff=1, takefocus=0)
             right_click_menu.add_command(label=LANG["RM_cut"], command=lambda: widget.event_generate('<<Cut>>'))
             right_click_menu.add_command(label=LANG["RM_copy"], command=lambda: widget.event_generate('<<Copy>>'))
             right_click_menu.add_command(label=LANG["RM_paste"], command=lambda: widget.event_generate('<<Paste>>'))
@@ -38,4 +40,3 @@ def ui_create_right_click_menu(widget: Union[ttk.Entry, ttk.Text]) -> None:
         widget.bind("<Button-3>", create_menu)
     except Exception as e:
         logger.error(f"An error occurred while binding the right click menu: {e}")
-
