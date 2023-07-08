@@ -56,7 +56,7 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
                 result_data['code'] = 1
                 logger.warning(f"Decompression Failed : {main_file}, target size mismatch")
                 return result_data
-        elif result.returncode == 2 and re.search(r"Cannot open encrypted archive. Wrong password", result.stderr):
+        elif result.returncode == 2 and re.search(r"Wrong password", result.stderr):
             result_data['code'] = 2
             logger.debug(f"Decompression Failed : {main_file}, wrong password: {passwd}")
             continue
