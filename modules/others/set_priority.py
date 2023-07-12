@@ -7,7 +7,7 @@ import psutil
 logger = logging.getLogger(__name__)
 
 
-def set_priority(pid: Optional[int] = None, priority: int = psutil.REALTIME_PRIORITY_CLASS) -> Optional[bool]:
+def set_priority(pid: Optional[int] = None, priority: int = psutil.HIGH_PRIORITY_CLASS) -> Optional[bool]:
     """
     设置指定进程的优先级。
 

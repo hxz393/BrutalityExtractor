@@ -40,7 +40,7 @@ def group_files_main(full_infos: List[Dict[str, Any]], path_zip: Optional[str] =
             file_list = info['grouped_file_list']
             file_type = 'application/zip' if force_mode else get_file_type(main_file)
             if file_type in ZIP_FILE_TYPE_DICT:
-                path = rename_target_if_exist(info['target_path'])
+                path = rename_target_if_exist(info['target_path'].rstrip('.').strip())
                 os.makedirs(path, exist_ok=True)
                 file_infos.append({'target_path': path, 'main_file': main_file, 'file_list': file_list})
             else:

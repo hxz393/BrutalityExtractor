@@ -1,6 +1,7 @@
-import os
-import uuid
 import logging
+import os
+import stat
+import uuid
 from typing import List, Union, Optional
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,7 @@ def remove_redundant_dirs(target_path: Union[str, os.PathLike]) -> Optional[List
                     os.rename(item.path, os.path.join(subdir.path, item.name))
 
                 if not any(os.scandir(temp_dir)):
+                    os.chmod(temp_dir, stat.S_IWRITE)
                     os.rmdir(temp_dir)
 
                 removed_dirs.append(os.path.normpath(sub_subdir_path))

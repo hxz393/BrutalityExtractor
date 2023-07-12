@@ -1,5 +1,6 @@
 import logging
 import os
+import stat
 from typing import Union, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ def remove_empty_dirs(target_path: Union[str, os.PathLike]) -> Optional[List[str
             if entry.is_dir(follow_symlinks=False):
                 removed_dirs.extend(remove_empty_dirs(entry.path))
         if not entries:
+            os.chmod(target_path, stat.S_IWRITE)
             os.rmdir(target_path)
             removed_dirs.append(str(target_path))
     except FileNotFoundError:
