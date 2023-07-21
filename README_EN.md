@@ -271,6 +271,19 @@ No. Please try professional software, such as `everything`, `PowerToys`, and oth
 
 To avoid too long update logs, only the most recent update log is retained.
 
+## Version 1.2.1 (2023.07.21)
+
+Improvements:
+
+1. Introduced feature to eliminate redundant directories, applicable to all sub-directories;
+2. Improved logic for determining the results of unzipping operations.
+
+Bug fixes:
+
+1. Reduced the priority level of program execution;
+2. Modified the update checking method;
+3. Fixed other minor issues.
+
 ## Version 1.2.0 (2023.06.28)
 
 Improvements:
