@@ -49,7 +49,11 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
             return result_data
 
         if result.returncode == 0:
-            if get_target_size(target_path) >= sum(filter(None, map(get_target_size, file_list))):
+            target_path_size = get_target_size(target_path)
+            file_list_size = sum(filter(None, map(get_target_size, file_list)))
+            result_size = int(re.search(r"Size:\s+(\d+)", stdout_text).group(1))
+            result_compressed = int(re.search(r"Compressed:\s+(\d+)", stdout_text).group(1))
+            if target_path_size == result_size and file_list_size == result_compressed:
                 result_data['code'] = 0
                 logger.info(f"Decompression Success : {main_file}")
                 return result_data
