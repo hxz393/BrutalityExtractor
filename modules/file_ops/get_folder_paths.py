@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import List, Optional, Union
 
@@ -26,5 +27,5 @@ def get_folder_paths(target_path: Union[str, os.PathLike]) -> Optional[List[str]
 
         return [os.path.normpath(os.path.join(root, dir_name)) for root, dirs, _ in os.walk(target_path) for dir_name in dirs]
     except Exception as e:
-        logger.error(f"An error occurred while retrieving folder paths: {e}")
+        logger.error(f"An error occurred while retrieving folder paths: {e}\n{traceback.format_exc()}")
         return None

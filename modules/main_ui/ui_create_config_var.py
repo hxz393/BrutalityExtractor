@@ -1,6 +1,7 @@
 from typing import Any, Union
 from functools import partial
 import logging
+import traceback
 import ttkbootstrap as ttk
 
 from modules.main_ui import ui_on_option_change
@@ -35,6 +36,6 @@ def ui_create_config_var(value: Any, config_key: str) -> Union[ttk.StringVar, tt
 
         config_variable.trace_add("write", partial(ui_on_option_change, config_key=config_key, config_var=config_variable))
     except Exception as e:
-        logger.error(f"An error occurred while creating the configuration variable: {e}")
+        logger.error(f"An error occurred while creating the configuration variable: {e}\n{traceback.format_exc()}")
 
     return config_variable

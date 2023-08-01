@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import stat
 import uuid
@@ -64,7 +65,7 @@ def remove_redundant_dirs(target_path: Union[str, os.PathLike]) -> Optional[List
 
                 removed_dirs.append(os.path.normpath(sub_subdir_path))
     except Exception as e:
-        logger.error(f"An error occurred while removing redundant directories: {e}")
+        logger.error(f"An error occurred while removing redundant directories: {e}\n{traceback.format_exc()}")
         return None
 
     return removed_dirs

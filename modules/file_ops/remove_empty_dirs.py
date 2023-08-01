@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import stat
 from typing import Union, List, Optional
@@ -36,7 +37,7 @@ def remove_empty_dirs(target_path: Union[str, os.PathLike]) -> Optional[List[str
         logger.error(f"Cannot delete directory '{target_path}': {str(e)}")
         return None
     except Exception as e:
-        logger.error(f"An error occurred while deleting empty directories: {e}")
+        logger.error(f"An error occurred while deleting empty directories: {e}\n{traceback.format_exc()}")
         return None
 
     return removed_dirs

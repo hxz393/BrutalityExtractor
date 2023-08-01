@@ -1,5 +1,6 @@
 import configparser
 import logging
+import traceback
 from pathlib import Path
 from typing import Optional, Union
 
@@ -29,7 +30,7 @@ def config_read(target_path: Union[str, Path]) -> Optional[configparser.ConfigPa
         with open(target_path, 'r', encoding="utf-8") as f:
             config_parser.read_file(f)
     except Exception as e:
-        logger.error(f"An error occurred while reading the config file {target_path}: {e}")
+        logger.error(f"An error occurred while reading the config file {target_path}: {e}\n{traceback.format_exc()}")
         return None
 
     return config_parser

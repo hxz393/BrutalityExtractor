@@ -1,4 +1,5 @@
 import logging
+import traceback
 from tkinter import EW, LEFT, BOTH, RIGHT, NSEW
 
 import ttkbootstrap as ttk
@@ -87,7 +88,7 @@ class CollapsingFrame(ttk.Frame):
                 btn['image'] = self.img_up
                 child.grid_remove()
         except Exception as e:
-            logger.error(f"An error occurred while adding the child to the frame: {e}")
+            logger.error(f"An error occurred while adding the child to the frame: {e}\n{traceback.format_exc()}")
 
     def _toggle_open_close(self, child):
         """
@@ -106,7 +107,7 @@ class CollapsingFrame(ttk.Frame):
 
             self.update_size()
         except Exception as e:
-            logger.error(f"An error occurred while toggling the status of the child frame: {e}")
+            logger.error(f"An error occurred while toggling the status of the child frame: {e}\n{traceback.format_exc()}")
 
     def update_size(self) -> None:
         """
@@ -118,4 +119,4 @@ class CollapsingFrame(ttk.Frame):
             new_height = sum(c.winfo_height() for c in self.grid_slaves()) + plug_height
             self.master.geometry(f"{self.master.winfo_width()}x{new_height}")
         except Exception as e:
-            logger.error(f"An error occurred while updating the frame size: {e}")
+            logger.error(f"An error occurred while updating the frame size: {e}\n{traceback.format_exc()}")

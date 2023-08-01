@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import re
 from collections import defaultdict
@@ -29,5 +30,5 @@ def group_file_paths(paths_list: List[str]) -> Optional[Dict[str, List[str]]]:
         logger.debug(f"path_groups: \n{path_groups}")
         return path_groups
     except Exception as e:
-        logger.error(f"An error occurred while grouping file paths: {e}")
+        logger.error(f"An error occurred while grouping file paths: {e}\n{traceback.format_exc()}")
         return None

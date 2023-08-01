@@ -511,7 +511,7 @@ class BrutalityExtractor:
 
             return True
         except Exception as e:
-            logger.error("Error during deletion process: {}".format("#" * 6, e, "#" * 6))
+            logger.error("Error during deletion process: {}".format("#" * 6, traceback.format_exc(), "#" * 6))
             return None
         finally:
             logger.info(LANG["extra_info_done"].format("#" * 6, "#" * 6))
@@ -558,7 +558,7 @@ class BrutalityExtractor:
                 try:
                     path_dest.mkdir(parents=True, exist_ok=True)
                 except Exception as e:
-                    logger.error(LANG["main_path_dest_error"].format("#" * 6, path_dest, e))
+                    logger.error(LANG["main_path_dest_error"].format("#" * 6, path_dest, traceback.format_exc()))
                     ui_display_msg(self.root, LANG["main_path_dest_error_msg"].format(path_dest), 'error')
                     return
                 full_infos = [{**file_info, 'target_path': str(path_dest / Path(*Path(file_info['target_path']).parts[len(Path(path_zip).parts):]))} for file_info in full_infos]
@@ -652,7 +652,7 @@ class BrutalityExtractor:
 
         # 故障处理
         except Exception as e:
-            logger.error(LANG["main_error"].format('#' * 6, '#' * 6, e))
+            logger.error(LANG["main_error"].format('#' * 6, '#' * 6, traceback.format_exc()))
             ui_display_msg(self.root, LANG["main_error_msg"], 'error')
 
         # 恢复按钮状态

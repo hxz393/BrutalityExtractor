@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import re
 from typing import List, Dict, Optional
@@ -66,5 +67,5 @@ def group_files_by_pattern(target_groups: Dict[str, List[str]]) -> Optional[List
 
         return part_lists
     except Exception as e:
-        logger.error(f"An error occurred while grouping files by pattern: {e}")
+        logger.error(f"An error occurred while grouping files by pattern: {e}\n{traceback.format_exc()}")
         return None

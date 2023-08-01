@@ -1,5 +1,6 @@
 import configparser
 import logging
+import traceback
 from pathlib import Path
 
 from filelock import FileLock
@@ -29,7 +30,7 @@ with lock:
         with open(CONFIG_PATH, 'w', encoding="utf-8") as configfile:
             CP.write(configfile)
     except Exception as e:
-        logger.error(f"An error occurred while writing to the configuration file: {e}")
+        logger.error(f"An error occurred while writing to the configuration file: {e}\n{traceback.format_exc()}")
 
 # 使用包装函数获取配置值
 path_zip_config = config_get(CP, 'main', 'path_zip', CP.get)

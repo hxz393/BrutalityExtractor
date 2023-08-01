@@ -78,7 +78,7 @@ def main(path_zip: Union[str, os.PathLike], password: Optional[str], parallel: s
         return 0
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}\n{traceback.format_exc()}")
         return 1
 
 

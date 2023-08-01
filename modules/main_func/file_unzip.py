@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import re
 import subprocess
@@ -45,7 +46,7 @@ def file_unzip(file_info: Dict[str, Union[str, list]], password_set: Set[str]) -
             logger.debug(f"Command: {unzip_command}\nOutput:\n{stdout_text}\n{stderr_text}")
         except Exception as e:
             result_data['code'] = -1
-            logger.warning(f"Command execution failed: {unzip_command}, Error message: {e}")
+            logger.warning(f"Command execution failed: {unzip_command}, Error message: {e}\n{traceback.format_exc()}")
             return result_data
 
         if result.returncode == 0:

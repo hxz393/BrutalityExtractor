@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import sys
 from typing import Union, Optional
@@ -27,5 +28,5 @@ def get_resource_path(relative_path: Union[str, os.PathLike]) -> Optional[str]:
         base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
         return os.path.join(base_path, relative_path)
     except Exception as e:
-        logger.error(f"An error occurred while retrieving resource path: {e}")
+        logger.error(f"An error occurred while retrieving resource path: {e}\n{traceback.format_exc()}")
         return None

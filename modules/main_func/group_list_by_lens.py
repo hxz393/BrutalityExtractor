@@ -1,4 +1,5 @@
 import logging
+import traceback
 from typing import Dict, List, Any, Optional
 
 from modules.main_func import group_files_by_pattern
@@ -24,5 +25,5 @@ def group_list_by_lens(path_groups: Dict[str, List[str]]) -> Optional[List[Dict[
         logger.debug(f"full_infos: \n{full_infos}")
         return full_infos
     except Exception as e:
-        logger.error(f"An error occurred while grouping list by lengths: {e}")
+        logger.error(f"An error occurred while grouping list by lengths: {e}\n{traceback.format_exc()}")
         return None

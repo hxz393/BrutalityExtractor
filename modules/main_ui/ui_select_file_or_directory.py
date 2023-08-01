@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import tkinter
 from tkinter import filedialog, END
@@ -34,4 +35,4 @@ def ui_select_file_or_directory(entry: tkinter.Entry, var: tkinter.StringVar, mo
         else:
             logger.warning("No path was selected.")
     except Exception as e:
-        logger.error(f"An error occurred while selecting a file or directory: {e}")
+        logger.error(f"An error occurred while selecting a file or directory: {e}\n{traceback.format_exc()}")

@@ -1,4 +1,5 @@
 import logging
+import traceback
 import tkinter as tk
 
 from ttkbootstrap.dialogs import Messagebox
@@ -31,5 +32,5 @@ def ui_display_msg(root: tk.Tk, message: str, level: str) -> None:
         elif level == 'error':
             root.after(10, lambda: Messagebox.show_error(title=LANG["msg_error_title"], message=message))
     except Exception as e:
-        logger.error(f"An error occurred while displaying the message: {e}")
+        logger.error(f"An error occurred while displaying the message: {e}\n{traceback.format_exc()}")
         return None

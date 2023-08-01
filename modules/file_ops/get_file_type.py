@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import Optional, Union
 
@@ -31,5 +32,5 @@ def get_file_type(target_path: Union[str, os.PathLike]) -> Optional[str]:
         logger.error(f"Unable to access file '{target_path}', permission denied.")
         return None
     except Exception as e:
-        logger.error(f"An error occurred while detecting the file type: {e}")
+        logger.error(f"An error occurred while detecting the file type: {e}\n{traceback.format_exc()}")
         return None

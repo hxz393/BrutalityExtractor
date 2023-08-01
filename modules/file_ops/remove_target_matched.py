@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import List, Union, Optional
 
@@ -38,5 +39,5 @@ def remove_target_matched(target_path: Union[str, os.PathLike], match_list: List
             remove_target(path)
         return matched_paths
     except Exception as e:
-        logger.error(f"An error occurred while removing matched targets. Error message: {e}")
+        logger.error(f"An error occurred while removing matched targets. Error message: {e}\n{traceback.format_exc()}")
         return None

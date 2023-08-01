@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import Any
 
@@ -31,4 +32,4 @@ def ui_on_option_change(*args, config_key: str = '', config_var: Any = None) -> 
         # 写入文件
         config_write(normalized_path, CP)
     except Exception as e:
-        logger.error(f"An error occurred while updating configuration: {e}")
+        logger.error(f"An error occurred while updating configuration: {e}\n{traceback.format_exc()}")

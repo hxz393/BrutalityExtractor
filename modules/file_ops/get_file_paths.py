@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import List, Union, Optional
 
@@ -26,5 +27,5 @@ def get_file_paths(target_path: Union[str, os.PathLike]) -> Optional[List[str]]:
         logger.debug(f"file_paths: \n{file_paths}")
         return file_paths
     except Exception as e:
-        logger.error(f"An error occurred while retrieving file paths: {e}")
+        logger.error(f"An error occurred while retrieving file paths: {e}\n{traceback.format_exc()}")
         return None

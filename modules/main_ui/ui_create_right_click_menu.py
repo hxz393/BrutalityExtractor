@@ -1,4 +1,5 @@
 import logging
+import traceback
 from typing import Union
 
 import ttkbootstrap as ttk
@@ -34,9 +35,9 @@ def ui_create_right_click_menu(widget: Union[ttk.Entry, ttk.Text]) -> None:
                 right_click_menu.add_command(label=LANG["RM_redo"], command=lambda: widget.event_generate('<<Redo>>'))
             right_click_menu.tk_popup(event.x_root, event.y_root)
         except Exception as e:
-            logger.error(f"An error occurred while creating the right click menu: {e}")
+            logger.error(f"An error occurred while creating the right click menu: {e}\n{traceback.format_exc()}")
 
     try:
         widget.bind("<Button-3>", create_menu)
     except Exception as e:
-        logger.error(f"An error occurred while binding the right click menu: {e}")
+        logger.error(f"An error occurred while binding the right click menu: {e}\n{traceback.format_exc()}")

@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 from typing import List, Union, Optional
 
@@ -31,5 +32,5 @@ def read_file_to_list(target_path: Union[str, os.PathLike]) -> Optional[List[str
         logger.error(f"Cannot decode file '{target_path}', please check whether it is in 'UTF-8' format.")
         return None
     except Exception as e:
-        logger.error(f"An error occurred while reading the file '{target_path}': {e}")
+        logger.error(f"An error occurred while reading the file '{target_path}': {e}\n{traceback.format_exc()}")
         return None

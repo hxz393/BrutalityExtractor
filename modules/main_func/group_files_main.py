@@ -1,6 +1,7 @@
 import os
 from typing import List, Dict, Any, Optional
 import logging
+import traceback
 
 from modules.file_ops import get_file_type, rename_target_if_exist, get_folder_paths, create_directories, remove_target
 from modules.configs.settings import ZIP_FILE_TYPE_DICT
@@ -52,5 +53,5 @@ def group_files_main(full_infos: List[Dict[str, Any]], path_zip: Optional[str] =
         logger.debug(f"file_infos: \n{file_infos}")
         return file_infos
     except Exception as e:
-        logger.error(f"An error occurred while grouping files: {e}")
+        logger.error(f"An error occurred while grouping files: {e}\n{traceback.format_exc()}")
         return None

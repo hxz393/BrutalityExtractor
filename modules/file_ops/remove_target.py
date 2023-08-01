@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import shutil
 import stat
@@ -54,5 +55,5 @@ def remove_target(path: Union[str, Path]) -> Optional[Path]:
         path.unlink()
         return path
     except Exception as e:
-        logger.error(f"An error occurred while removing path '{path}': {e}.")
+        logger.error(f"An error occurred while removing path '{path}': {e}\n{traceback.format_exc()}")
         return None
