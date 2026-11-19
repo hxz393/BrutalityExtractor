@@ -2,7 +2,7 @@ import os
 from typing import List, Dict, Any, Optional
 import logging
 
-from modules.file_ops import get_file_type, rename_target_if_exist, get_folder_paths, create_directories, remove_target
+from modules.file_ops import get_file_type, get_folder_paths, create_directories, remove_target
 from modules.configs.settings import ZIP_FILE_TYPE_DICT
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ def group_files_main(full_infos: List[Dict[str, Any]], path_zip: Optional[str] =
             file_list = info['grouped_file_list']
             file_type = 'application/zip' if force_mode else get_file_type(main_file)
             if file_type in ZIP_FILE_TYPE_DICT:
-                path = rename_target_if_exist(info['target_path'].rstrip('.').strip())
+                path = os.path.dirname(os.path.abspath(main_file))
                 os.makedirs(path, exist_ok=True)
                 file_infos.append({'target_path': path, 'main_file': main_file, 'file_list': file_list})
             else:

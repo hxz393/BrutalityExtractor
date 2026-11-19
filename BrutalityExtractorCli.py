@@ -58,13 +58,12 @@ def main(path_zip: Union[str, os.PathLike], password: Optional[str], parallel: s
         def print_result(result):
             nonlocal failed_counts
             if result['code'] == 0:
-                [remove_target(file_del) for file_del in result['file_info']['file_list']]
+                pass
             else:
-                remove_target(result['file_info']['target_path']) if os.path.exists(result['file_info']['target_path']) else None
                 failed_counts += 1
 
         for file_info in file_infos:
-            thread_pool.apply_async(file_unzip, args=(file_info, password_list), callback=print_result)
+            thread_pool.apply_async(file_unzip, args=(file_info, password_list, True), callback=print_result)
 
         thread_pool.close()
         thread_pool.join()
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', default=None, required=True, help='directory with zip files')
     parser.add_argument('-p', default='', help='password or text with password (optional)')
     parser.add_argument('-c', default='1', help='set up your speed (optional)')
-    parser.add_argument('-v', '--version', action='version', version='BrutalityExtractor v1.2.1')
+    parser.add_argument('-v', '--version', action='version', version='BrutalityExtractor v1.2.2 - Michael 修改版')
 
     args = parser.parse_args()
 

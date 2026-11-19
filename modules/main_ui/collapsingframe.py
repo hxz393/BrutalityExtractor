@@ -3,7 +3,8 @@ from tkinter import EW, LEFT, BOTH, RIGHT, NSEW
 
 import ttkbootstrap as ttk
 from tkfontawesome import icon_to_image
-from ttkbootstrap import PRIMARY, Bootstyle, INVERSE
+from ttkbootstrap import Bootstyle
+from ttkbootstrap.constants import PRIMARY, INVERSE
 
 from modules.configs import ICO_SIZE, FONT_SIZE, mini_skin_config
 

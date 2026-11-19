@@ -8,6 +8,7 @@ Features:
 
 - Batch decompression: Automatically scans and decompresses all compressed files in the specified directory, even if the file extension is incorrect.
 - Supports multiple formats: Supports common compression file formats `7z`, `zip`, `rar`, `tar`, `gz`, `xz`, `bz2` and can properly handle split compressed files.
+- Nested extraction: Continues extracting archives found in an extraction target, including split volumes such as `7z.001` and `7z.002`, until no supported archive remains.
 - Supports multiprocessing: Customize the number of decompression processes based on the processor thread count, doubling the decompression speed.
 - Supports password lists: You can set a list of common passwords to automatically match encrypted compressed files.
 - Additional features: Includes useful functions such as removing directory redundancy, deleting empty directories, and deleting junk files.
@@ -143,9 +144,7 @@ Extraction Directory or Destination Directory is a mandatory field.
 
 - **Destination Directory**
 
-  Enter the directory where the decompressed files will be stored. The structure of the decompressed directory will be consistent with that in the extraction directory. For example, `B:/Archive/xd1/test.zip` will be decompressed to `B:/New/xd1/test`, if destination directory is `B:/New`.
-
-  Setting the destination directory to a different disk can slightly increase the decompression speed.
+  Extracted files are placed directly in the same directory as the archive. No archive-name subdirectory or separate destination directory structure is created.
 
 - **Decryption Password**
 
@@ -174,6 +173,10 @@ Settings in the advanced configuration need to be adjusted according to actual c
 - **Force Mode**
 
   Skip file type identification, attempt to decompress all files in the directory.
+
+- **Nested Archives**
+
+  The extraction target is scanned for nested archives and extraction continues until no supported archive remains. Split volumes such as `7z.001` and `7z.002` are handled as one archive.   Successfully extracted nested archives and split volumes are removed as intermediate process files. Removal of the original source archive still follows the existing “Remove Source” setting.
 
 - **Log-related**
 
@@ -268,6 +271,13 @@ No. Common compression software uses resources very well when compressing, pleas
 No. Please try professional software, such as `everything`, `PowerToys`, and other excellent free software.
 
 # Update Logs
+
+## Version 1.2.2 (2026.11.19, Michael Edition)
+
+Improvements:
+
+1. After extraction, move final samples to the target directory root and remove intermediate extraction directories.
+2. Continue extracting nested archives and split-volume archives.
 
 To avoid too long update logs, only the most recent update log is retained.
 

@@ -10,3 +10,4 @@ __pycache__
 /venv
 /BrutalityExtractor.spec
 /old_ui.py
+*.exe

@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List, Any, Optional
 
-from modules.main_func import group_files_by_pattern
+from modules.main_func.group_files_by_pattern import group_files_by_pattern
 
 logger = logging.getLogger(__name__)
 

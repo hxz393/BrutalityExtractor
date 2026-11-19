@@ -19,7 +19,7 @@ logging_config(**LOG_CONFIG_DICT)
 class BrutalityExtractor:
     """
     软件名：BrutalityExtractor\n
-    版本：1.2.1\n
+    版本：1.2.2，Michael 修改版\n
     更新时间：2023.07.21\n
     打包命令：pyinstaller -F -w -i BrutalityExtractor.ico --add-binary 'bin/7z.exe;bin' --add-binary 'bin/7z.dll;bin' --collect-all="tksvg" BrutalityExtractor.py\n
     TK 文档：https://docs.python.org/zh-cn/3.10/library/tk.html\n
@@ -31,7 +31,7 @@ class BrutalityExtractor:
         # 主窗口配置
         self.root = ttk.Window()
         self.style = ttk.Style(theme=theme_config)
-        self.root.title("BrutalityExtractor v1.2.1")
+        self.root.title("BrutalityExtractor v1.2.2 - Michael 修改版")
         self.root.attributes("-alpha", alpha_config)
         self.root.resizable(width=True, height=False)
         self.root.place_window_center()
@@ -117,10 +117,10 @@ class BrutalityExtractor:
         self.var_para = ui_create_config_var(parallel_config, 'parallel')
 
         self.label_para = ttk.Label(self.advance_area_fr1, text=LANG["label_para_text"])
-        self.label_para.pack(side=ttk.LEFT)
+        self.label_para.pack(side=tk.LEFT)
 
         self.spinbox_para = ttk.Spinbox(self.advance_area_fr1, textvariable=self.var_para, from_=1, to=round(cpu_count() / 2) if cpu_count() > 3 else 1, increment=1, width=3, state="readonly")
-        self.spinbox_para.pack(side=ttk.LEFT)
+        self.spinbox_para.pack(side=tk.LEFT)
 
         ToolTip(self.label_para, LANG["tooltip_label_para"], self.var_ntlp)
 
@@ -132,10 +132,10 @@ class BrutalityExtractor:
         self.var_warn = ui_create_config_var(no_warnning_config, 'no_warnning')
 
         self.label_warn = ttk.Label(self.advance_area_fr2, text=LANG["label_warn_text"])
-        self.label_warn.pack(side=ttk.LEFT)
+        self.label_warn.pack(side=tk.LEFT)
 
         self.checkbutton_warn = ttk.Checkbutton(self.advance_area_fr2, bootstyle="success-square-toggle", variable=self.var_warn, onvalue=1, offvalue=0)
-        self.checkbutton_warn.pack(side=ttk.LEFT)
+        self.checkbutton_warn.pack(side=tk.LEFT)
 
         ToolTip(self.label_warn, LANG["tooltip_label_warn"], self.var_ntlp)
 
@@ -143,10 +143,10 @@ class BrutalityExtractor:
         self.var_sdlt = ui_create_config_var(is_delete_config, 'is_delete')
 
         self.label_sdlt = ttk.Label(self.advance_area_fr2, text=LANG["label_sdlt_text"])
-        self.label_sdlt.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_sdlt.pack(side=tk.LEFT, padx=(10, 0))
 
         self.checkbutton_sdlt = ttk.Checkbutton(self.advance_area_fr2, bootstyle="success-square-toggle", variable=self.var_sdlt, onvalue=1, offvalue=0)
-        self.checkbutton_sdlt.pack(side=ttk.LEFT)
+        self.checkbutton_sdlt.pack(side=tk.LEFT)
 
         ToolTip(self.label_sdlt, LANG["tooltip_label_sdlt"], self.var_ntlp)
 
@@ -154,10 +154,10 @@ class BrutalityExtractor:
         self.var_sfrc = ui_create_config_var(is_force_config, 'is_force')
 
         self.label_sfrc = ttk.Label(self.advance_area_fr2, text=LANG["label_sfrc_text"])
-        self.label_sfrc.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_sfrc.pack(side=tk.LEFT, padx=(10, 0))
 
         self.checkbutton_sfrc = ttk.Checkbutton(self.advance_area_fr2, bootstyle="warning-square-toggle", variable=self.var_sfrc, onvalue=1, offvalue=0)
-        self.checkbutton_sfrc.pack(side=ttk.LEFT)
+        self.checkbutton_sfrc.pack(side=tk.LEFT)
 
         ToolTip(self.label_sfrc, LANG["tooltip_label_sfrc"], self.var_ntlp)
 
@@ -170,10 +170,10 @@ class BrutalityExtractor:
         self.var_logl.trace_add('write', self.update_logl_style)
 
         self.label_logl = ttk.Label(self.advance_area_fr3, text=LANG["label_logl_text"])
-        self.label_logl.pack(side=ttk.LEFT)
+        self.label_logl.pack(side=tk.LEFT)
 
         self.menubutton_logl = ttk.Menubutton(self.advance_area_fr3, bootstyle="default-outline", width=9, textvariable=self.var_logl)
-        self.menubutton_logl.pack(side=ttk.LEFT)
+        self.menubutton_logl.pack(side=tk.LEFT)
 
         self.menu_logl = ttk.Menu(self.menubutton_logl, tearoff=True)
         self.menu_logl.add_radiobutton(label='ERROR', value='ERROR', variable=self.var_logl)
@@ -189,10 +189,10 @@ class BrutalityExtractor:
         self.var_logs = ui_create_config_var(log_size_config, 'log_size')
 
         self.label_logs = ttk.Label(self.advance_area_fr3, text=LANG["label_logs_text"])
-        self.label_logs.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_logs.pack(side=tk.LEFT, padx=(10, 0))
 
         self.spinbox_logs = ttk.Spinbox(self.advance_area_fr3, textvariable=self.var_logs, from_=1, to=10, increment=1, width=2, state="readonly")
-        self.spinbox_logs.pack(side=ttk.LEFT)
+        self.spinbox_logs.pack(side=tk.LEFT)
 
         ToolTip(self.label_logs, LANG["tooltip_label_logs"], self.var_ntlp)
 
@@ -200,10 +200,10 @@ class BrutalityExtractor:
         self.var_logc = ui_create_config_var(log_count_config, 'log_count')
 
         self.label_logc = ttk.Label(self.advance_area_fr3, text=LANG["label_logc_text"])
-        self.label_logc.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_logc.pack(side=tk.LEFT, padx=(10, 0))
 
         self.spinbox_logc = ttk.Spinbox(self.advance_area_fr3, textvariable=self.var_logc, from_=1, to=99, increment=1, width=2, state="readonly")
-        self.spinbox_logc.pack(side=ttk.LEFT)
+        self.spinbox_logc.pack(side=tk.LEFT)
 
         ToolTip(self.label_logc, LANG["tooltip_label_logc"], self.var_ntlp)
 
@@ -220,10 +220,10 @@ class BrutalityExtractor:
 
         # 关闭提示相关元素
         self.label_ntlp = ttk.Label(self.skin_area_fr1, text=LANG["label_ntlp_text"])
-        self.label_ntlp.pack(side=ttk.LEFT)
+        self.label_ntlp.pack(side=tk.LEFT)
 
         self.checkbutton_ntlp = ttk.Checkbutton(self.skin_area_fr1, bootstyle="success-square-toggle", variable=self.var_ntlp, onvalue=1, offvalue=0)
-        self.checkbutton_ntlp.pack(side=ttk.LEFT)
+        self.checkbutton_ntlp.pack(side=tk.LEFT)
 
         ToolTip(self.label_ntlp, LANG["tooltip_label_ntlp"], self.var_ntlp)
 
@@ -231,10 +231,10 @@ class BrutalityExtractor:
         self.var_mini = ui_create_config_var(mini_skin_config, 'mini_skin')
 
         self.label_mini = ttk.Label(self.skin_area_fr1, text=LANG["label_mini_text"])
-        self.label_mini.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_mini.pack(side=tk.LEFT, padx=(10, 0))
 
         self.checkbutton_mini = ttk.Checkbutton(self.skin_area_fr1, bootstyle="success-square-toggle", variable=self.var_mini, onvalue=1, offvalue=0)
-        self.checkbutton_mini.pack(side=ttk.LEFT)
+        self.checkbutton_mini.pack(side=tk.LEFT)
 
         ToolTip(self.label_mini, LANG["tooltip_label_mini"], self.var_ntlp)
 
@@ -246,10 +246,10 @@ class BrutalityExtractor:
         self.var_theme = ui_create_config_var(theme_config, 'theme')
 
         self.label_theme = ttk.Label(self.skin_area_fr2, text=LANG["label_theme_text"])
-        self.label_theme.pack(side=ttk.LEFT)
+        self.label_theme.pack(side=tk.LEFT)
 
         self.menubutton_theme = ttk.Menubutton(self.skin_area_fr2, bootstyle="default-outline", width=9, textvariable=self.var_theme)
-        self.menubutton_theme.pack(side=ttk.LEFT)
+        self.menubutton_theme.pack(side=tk.LEFT)
 
         self.menu_theme = ttk.Menu(self.menubutton_theme, tearoff=False)
 
@@ -262,10 +262,10 @@ class BrutalityExtractor:
         self.var_lang = ui_create_config_var(lang_config, 'lang')
 
         self.label_lang = ttk.Label(self.skin_area_fr2, text=LANG["label_lang_text"])
-        self.label_lang.pack(side=ttk.LEFT, padx=(10, 0))
+        self.label_lang.pack(side=tk.LEFT, padx=(10, 0))
 
         self.menubutton_lang = ttk.Menubutton(self.skin_area_fr2, bootstyle="default-outline", width=9, textvariable=self.var_lang)
-        self.menubutton_lang.pack(side=ttk.LEFT)
+        self.menubutton_lang.pack(side=tk.LEFT)
 
         self.menu_lang = ttk.Menu(self.menubutton_lang, tearoff=False)
         self.menu_lang.add_command(label='English', command=lambda lang='ENG': self.change_language(lang))
@@ -282,10 +282,10 @@ class BrutalityExtractor:
         self.var_alpha = ui_create_config_var(alpha_config, 'alpha')
 
         self.label_alpha = ttk.Label(self.skin_area_fr3, text=LANG["label_alpha_text"])
-        self.label_alpha.pack(side=ttk.LEFT)
+        self.label_alpha.pack(side=tk.LEFT)
 
         self.scale_alpha = ttk.Scale(self.skin_area_fr3, bootstyle='success', variable=self.var_alpha, from_=0.20, to=1.00, command=lambda var=self.var_alpha.get(): self.change_alpha(var))
-        self.scale_alpha.pack(side=ttk.LEFT)
+        self.scale_alpha.pack(side=tk.LEFT)
 
         ToolTip(self.label_alpha, LANG["tooltip_label_alpha"], self.var_ntlp)
 
@@ -304,10 +304,10 @@ class BrutalityExtractor:
         self.var_extr = ui_create_config_var(is_extra_config, 'is_extra')
 
         self.label_extr = ttk.Label(self.extra_area_fr1, text=LANG["label_extr_text"])
-        self.label_extr.pack(side=ttk.LEFT)
+        self.label_extr.pack(side=tk.LEFT)
 
         self.checkbutton_extr = ttk.Checkbutton(self.extra_area_fr1, width=1, bootstyle="info-square-toggle", variable=self.var_extr, onvalue=1, offvalue=0)
-        self.checkbutton_extr.pack(side=ttk.LEFT)
+        self.checkbutton_extr.pack(side=tk.LEFT)
 
         ToolTip(self.label_extr, LANG["tooltip_label_extr"], self.var_ntlp)
 
@@ -319,10 +319,10 @@ class BrutalityExtractor:
         self.var_rddd = ui_create_config_var(is_redundant_config, 'is_redundant')
 
         self.label_rddd = ttk.Label(self.extra_area_fr2, text=LANG["label_rddd_text"])
-        self.label_rddd.pack(side=ttk.LEFT)
+        self.label_rddd.pack(side=tk.LEFT)
 
         self.checkbutton_rddd = ttk.Checkbutton(self.extra_area_fr2, width=1, bootstyle="success-square-toggle", variable=self.var_rddd, onvalue=1, offvalue=0)
-        self.checkbutton_rddd.pack(side=ttk.LEFT)
+        self.checkbutton_rddd.pack(side=tk.LEFT)
 
         ToolTip(self.label_rddd, LANG["tooltip_label_rddd"], self.var_ntlp)
 
@@ -330,10 +330,10 @@ class BrutalityExtractor:
         self.var_mpty = ui_create_config_var(is_empty_config, 'is_empty')
 
         self.label_mpty = ttk.Label(self.extra_area_fr2, text=LANG["label_mpty_text"])
-        self.label_mpty.pack(side=ttk.LEFT)
+        self.label_mpty.pack(side=tk.LEFT)
 
         self.checkbutton_mpty = ttk.Checkbutton(self.extra_area_fr2, bootstyle="success-square-toggle", variable=self.var_mpty, onvalue=1, offvalue=0)
-        self.checkbutton_mpty.pack(side=ttk.LEFT)
+        self.checkbutton_mpty.pack(side=tk.LEFT)
 
         ToolTip(self.label_mpty, LANG["tooltip_label_mpty"], self.var_ntlp)
 
@@ -549,24 +549,13 @@ class BrutalityExtractor:
             # 对文件路径列表按解压目标进行初步分组
             path_groups = group_file_paths(file_paths)
 
-            # 生成全文件分组列表，获取空闲磁盘，看条件替换目标目录
+            # 生成全文件分组列表。解压位置固定为压缩文件所在目录，不创建压缩名子目录。
             full_infos = group_list_by_lens(path_groups)
             disk_free = psutil.disk_usage(Path(path_zip).anchor).free
-            path_dest = self.entry_dest.get().strip()
-            if path_dest:
-                path_dest = Path(path_dest)
-                try:
-                    path_dest.mkdir(parents=True, exist_ok=True)
-                except Exception as e:
-                    logger.error(LANG["main_path_dest_error"].format("#" * 6, path_dest, e))
-                    ui_display_msg(self.root, LANG["main_path_dest_error_msg"].format(path_dest), 'error')
-                    return
-                full_infos = [{**file_info, 'target_path': str(path_dest / Path(*Path(file_info['target_path']).parts[len(Path(path_zip).parts):]))} for file_info in full_infos]
-                disk_free = psutil.disk_usage(Path(path_dest).anchor).free
 
             # 筛选出压缩文件分组列表，检查是否有压缩文件
             is_force = self.var_sfrc.get()
-            file_infos = group_files_main(full_infos, path_zip, path_dest, is_force)
+            file_infos = group_files_main(full_infos, '', '', is_force)
             if not file_infos:
                 logger.warning(LANG["main_no_file_infos_warning"].format("#" * 6, path_zip, "#" * 6))
                 ui_display_msg(self.root, LANG["main_no_file_infos_warning_msg"].format(path_zip), 'warning')
@@ -623,11 +612,11 @@ class BrutalityExtractor:
                 }
 
                 if return_code == 0:
-                    del_list = [remove_target(file_del) for file_del in result['file_info']['file_list']] if is_delete == 1 else None
+                    del_list = None
                     finished_counts += 1
                     self.text_logs.insert(END, ERROR_CODE[return_code] + '\n', "green")
                 else:
-                    del_list = [remove_target(result['file_info']['target_path'])]
+                    del_list = None
                     failed_counts += 1
                     self.text_logs.insert(END, ERROR_CODE[return_code] + '\n', "red")
                 logger.debug(LANG["extra_debug_del_list"].format(list_to_str(del_list)))
@@ -641,7 +630,7 @@ class BrutalityExtractor:
 
             with Pool(processes=parallel) as self.process_pool:
                 for file_info in file_infos:
-                    self.process_pool.apply_async(file_unzip, args=(file_info, password_list), callback=post_action)
+                    self.process_pool.apply_async(file_unzip, args=(file_info, password_list, is_delete == 1), callback=post_action)
                 self.process_pool.close()
                 self.process_pool.join()
 
